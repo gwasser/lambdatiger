@@ -20,58 +20,53 @@
 -}
 
 
-module Tiger.Lexer.Tokens where 
+module Tiger.Lexer.Tokens where
 
--- |Represents position within the input text stream as an integer.
-type Position = Int
-
--- |A Token as read by the lexer. Every token type takes at least
--- two Positions, representing the beginning position of the token
--- and end position of the token, resepectively.
+-- |A Token of the Tiger language as read by the lexer.
 -- Tokens consist of all keywords, punctuation, and data types
 -- of the Tiger language, as well as special End of File (EOF) token.
--- Data type tokens have an additional third constructor argument
+-- Data type tokens have an additional constructor argument
 -- representing the value of the token.
-data Token = EOF Position Position
-           | ARRAY Position Position
-           | BREAK Position Position
-           | DO Position Position
-           | ELSE Position Position
-           | END Position Position
-           | FOR Position Position
-           | FUNCTION Position Position
-           | IF Position Position
-           | IN Position Position
-           | LET Position Position
-           | NIL Position Position
-           | OF Position Position
-           | TO Position Position
-           | VAR Position Position
-           | THEN Position Position
-           | TYPE Position Position
-           | WHILE Position Position
-           | AMPERSAND Position Position
-           | COLON Position Position
-           | COMMA Position Position
-           | DEFINE Position Position -- :=
-           | EQUAL Position Position
-           | GREATERTHAN Position Position
-           | GREATEROREQUAL Position Position
-           | LBRACE Position Position
-           | LBRACKET Position Position
-           | LESSTHAN Position Position
-           | LESSOREQUAL Position Position
-           | LPAREN Position Position
-           | MINUS Position Position
-           | NOTEQUAL Position Position -- <>
-           | PERIOD Position Position
-           | PIPE Position Position
-           | PLUS Position Position
-           | RBRACE Position Position
-           | RBRACKET Position Position
-           | RPAREN Position Position
-           | SEMICOLON Position Position
-           | SLASH Position Position
-           | STAR Position Position
-           | ID String Position Position
-           | NUM Int Position Position
+data Token = EOF 
+           | ARRAY 
+           | BREAK 
+           | DO 
+           | ELSE 
+           | END 
+           | FOR 
+           | FUNCTION 
+           | IF 
+           | IN 
+           | LET 
+           | NIL 
+           | OF 
+           | TO 
+           | VAR 
+           | THEN 
+           | TYPE 
+           | WHILE 
+           | AMPERSAND 
+           | COLON 
+           | COMMA 
+           | DEFINE  -- :=
+           | EQUAL 
+           | GREATERTHAN 
+           | GREATEROREQUAL 
+           | LBRACE 
+           | LBRACKET 
+           | LESSTHAN 
+           | LESSOREQUAL 
+           | LPAREN 
+           | MINUS 
+           | NOTEQUAL  -- <>
+           | PERIOD 
+           | PIPE 
+           | PLUS 
+           | RBRACE 
+           | RBRACKET 
+           | RPAREN 
+           | SEMICOLON 
+           | SLASH 
+           | STAR 
+           | ID String 
+           | NUM Int 

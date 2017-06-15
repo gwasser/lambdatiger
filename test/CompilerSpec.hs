@@ -19,5 +19,23 @@
     along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+import Test.Tasty (defaultMain, testGroup)
+import Test.Tasty.HUnit (assertEqual, testCase)
+
+import Tiger.Lexer.RegEx (Regex(..))
+import Tiger.Lexer.NFA (SymbolOrEmpty(..), State(..), NFA, regexToNFA)
+
+main = defaultMain unitTests
+
+unitTests =
+  testGroup
+    "Unit Tests for RE -> NFA"
+    [testEmptyRE, testSingleCharRE]
+
+emptyRE = [(((Initial 0), Empty), [(Final 1)])]
+testEmptyRE =
+  testCase "empty" $ assertEqual [] emptyRE (regexToNFA (Epsilon))
+
+justaRE = [(((Initial 0), Symbol 'a'), [(Final 1)])]
+testSingleCharRE =
+  testCase "a" $ assertEqual [] justaRE (regexToNFA (Exact 'a'))

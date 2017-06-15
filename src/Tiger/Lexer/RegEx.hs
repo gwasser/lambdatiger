@@ -24,16 +24,13 @@
 -- translating human-readable regexes to DFAs for lexing
 module Tiger.Lexer.RegEx where
 
-data Regex = REChar Char -- |a single character
-           | Empty -- |epsilon, or the empty string
+data Regex = Exact Char -- |a single character
+           | Epsilon -- |epsilon, or the empty string
            | Alternate Regex Regex -- |A|B, match either A or B, for two regexes A and B
            | Concat Regex Regex -- |AB, A followed by B, for two regexes A and B
            | Repeat0 Regex -- |*, zero or more occurrences of a regex
-           | Repeat1 Regex -- |+, one or more occurrences of a regex
-           | Optional Regex -- |?, zero or one occurence of a regex
            | Set String -- |Set of single characters that are acceptable for a match
-           | AnyChar -- |any character matches other than newline
-           | Quoted String -- |A literal string in quotes, must match exactly
+           deriving Eq
            
 (||) :: Regex -> Regex -> Regex
 (||) r1 r2 = Alternate r1 r2
@@ -41,6 +38,6 @@ data Regex = REChar Char -- |a single character
 (**) :: Regex -> Regex -> Regex
 (**) r1 r2 = Concat r1 r2
 
-strToRECharSet :: String -> [Regex]
-strToRECharSet [] = []
-strToRECharSet (c:cs) = (REChar c) : (strToRECharSet cs)
+strToRegexCharSet :: String -> [Regex]
+strToRegexCharSet [] = []
+strToRegexCharSet (c:cs) = (Exact c) : (strToRegexCharSet cs)
