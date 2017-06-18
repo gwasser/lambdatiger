@@ -19,7 +19,17 @@
     along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
--- |Main lexer module
+-- |Main lexer module for Tiger language
 module Tiger.Lexer.Lexer where
 
+import Tiger.Lexer.Regex (Regex(..), (||), (**), strToRECharSet)
+import Tiger.Lexer.Tokens (Token(..))
+import Tiger.Lexer.DFA (DFA)
 
+-- |Represents position within the input text stream as an integer.
+type Position = Int
+
+-- |Token with meta info such as position within input text stream.
+-- First Position is start of Token within stream, second Position
+-- is ending position of Token within stream.
+newtype TokenWithMeta = TokenWithMeta Token (Position, Position)

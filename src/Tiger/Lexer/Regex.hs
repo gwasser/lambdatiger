@@ -24,8 +24,6 @@
 -- translating human-readable regexes to DFAs for lexing
 module Tiger.Lexer.Regex where
 
-import Tiger.Lexer.DFA (DFA)
-
 -- |Represent a regular expression as an AST (possibly augmented)
 data Regex a = Exact Char -- |a single character
            | Epsilon -- |epsilon, or the empty string
@@ -47,31 +45,10 @@ strToRegexCharSet (c:cs) = (Exact c) : (strToRegexCharSet cs)
 
 -- |Converts a character set into equivalent recursive Ors.
 -- Assumes the '[' and ']' have already been removed from String.
-charSetToOr :: String -> Regex a
-charSetToOr s = foldl Or (head stream) (tail stream)
+orAlternately :: String -> Regex a
+orAlternately s = foldl Or (head stream) (tail stream)
     where stream = (strToRegexCharSet s)
 
-strToCat :: String -> Regex a
-strToCat (c:cs) = Cat (Exact c) (strToCat cs)
+followedBy :: String -> Regex a
+followedBy (c:cs) = Cat (Exact c) (followedBy cs)
           
--- |Two stacks to assist in reading a regex string.
--- First is last expression stack, second is () or [] stack,
--- and String is remainder of regex String to parse.
-type RegexState = ([Char], [Char], String, Maybe (Regex a))
-
-initRegexState :: String -> RegexState
-initRegexState s = ([],[],s,Nothing)
-
-nextRegexState :: RegexState -> Maybe RegexState
--- if parentheses, keep reading until end parens
-nextRegexState (l,[],('(':cs),r) = (l,['('],cs,r)
-nextRegexState (l,p,(c:cs),r) =
-    case c of
-         '|' -> ([],pJust (Or (Exact (reverse l)) (strToRegex cs))
-
--- |Simple parsing function to read a regex String into Regex AST
-strToRegex :: String -> Regex a
-strToRegex [] = error "Error reading regex string: ran out of characters"
-strToRegex [c] = 
-strToRegex (c:cs) = case c of
-                         '|' -> Or (Exact c) (strToRegex cs)

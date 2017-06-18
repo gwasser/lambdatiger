@@ -61,6 +61,9 @@ runDFA dfa w = run (initConfigDFA dfa w) where
     run conf = case (nextConfigDFA dfa conf) of
                     Nothing -> conf
                     Just newConf -> run newConf
+                    
+runDFAst :: DFA st -> String -> st
+runDFAst dfa w = fst (runDFA dfa w)
      
 -- |Return True if given configuration of a DFA is a final state
 acceptConfigDFA :: DFA st -> ConfigDFA st -> Bool
