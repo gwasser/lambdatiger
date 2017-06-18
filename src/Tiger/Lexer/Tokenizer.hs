@@ -25,7 +25,7 @@ module Tiger.Lexer.Tokenizer where
 import Data.Char
 import Control.Monad
 
-import Tiger.Lexer.RegEx (RegEx(..), (||), (**), strToRECharSet)
+import Tiger.Lexer.Regex (Regex(..), (||), (**), strToRECharSet)
 import Tiger.Lexer.Tokens (Token(..))
 
 -- |Represents position within the input text stream as an integer.
@@ -38,7 +38,7 @@ newtype TokenWithMeta = TokenWithMeta Token (Position, Position)
 
 
 -- |Translate a regex into a 
-regexToDFA :: Regex -> DFA
+regexToDFA :: Regex a -> DFA
 regexToDFA = undefined
 
 

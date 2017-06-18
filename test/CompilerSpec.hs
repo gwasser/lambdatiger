@@ -22,14 +22,13 @@
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexer.RegEx (Regex(..))
+import Tiger.Lexer.Regex (Regex(..))
 import Tiger.Lexer.DFA (DFA, runDFA, execDFA)
-import Tiger.Lexer.NFA (SymbolOrEmpty(..), State(..), NFA, regexToNFA)
 
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "All Unit Tests" [dfaTests, nfaTests]
+tests = testGroup "All Unit Tests" [dfaTests]
 
 
 
@@ -58,14 +57,3 @@ testExecDFA2 =
   testCase "DFA for (a|b)*abb should NOT accept input 'ababaa'" $ assertEqual [] False (execDFA dfa1 "ababaa")
 
 
-
-
-nfaTests = testGroup "Unit Tests for RE -> NFA" [testEmptyRE, testSingleCharRE]
-
-emptyRE = [(((Initial 0), Empty), [(Final 1)])]
-testEmptyRE =
-  testCase "empty" $ assertEqual [] emptyRE (regexToNFA (Epsilon))
-
-justaRE = [(((Initial 0), Symbol 'a'), [(Final 1)])]
-testSingleCharRE =
-  testCase "a" $ assertEqual [] justaRE (regexToNFA (Exact 'a'))

@@ -22,7 +22,7 @@
 
 -- |Represents regular expressions in a Haskell type class for use in
 -- translating human-readable regexes to DFAs for lexing
-module Tiger.Lexer.RegEx where
+module Tiger.Lexer.Regex where
 
 -- |Represent a regular expression (possibly augmented)
 data Regex a = Exact Char -- |a single character
