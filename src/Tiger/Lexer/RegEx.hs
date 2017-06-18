@@ -24,13 +24,15 @@
 -- translating human-readable regexes to DFAs for lexing
 module Tiger.Lexer.RegEx where
 
-data Regex = Exact Char -- |a single character
-           | Epsilon -- |epsilon, or the empty string
-           | Alternate Regex Regex -- |A|B, match either A or B, for two regexes A and B
-           | Concat Regex Regex -- |AB, A followed by B, for two regexes A and B
-           | Repeat0 Regex -- |*, zero or more occurrences of a regex
-           | Set String -- |Set of single characters that are acceptable for a match
-           deriving Eq
+-- |Represent a regular expression (possibly augmented)
+data Regex a = Exact Char -- |a single character
+             | Epsilon -- |epsilon, or the empty string
+             | Alternate Regex Regex -- |A|B, match either A or B, for two regexes A and B
+             | Concat Regex Regex -- |AB, A followed by B, for two regexes A and B
+             | Repeat0 Regex -- |*, zero or more occurrences of a regex
+             | Set String -- |Set of single characters that are acceptable for a match
+             | Sentinel a -- |Sentinel marking end of regex to form an augmented regex, parameterized by meta info about accepting state
+             deriving Eq
            
 (||) :: Regex -> Regex -> Regex
 (||) r1 r2 = Alternate r1 r2

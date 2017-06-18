@@ -20,11 +20,10 @@
 -}
 
 
--- |Represents deterministic finite automata (DFAs) for use in lexing
+-- |Represents deterministic finite automata (DFAs) for use in lexing.
+-- Inspired by a similar implementation from Daniele Micciancio,
+-- <https://cseweb.ucsd.edu/classes/wi14/cse105-a/haskell/intro.html>.
 module Tiger.Lexer.DFA where
-
-import Tiger.Lexer.RegEx (RegEx(..), (||), (**), strToRECharSet)
-import Tiger.Lexer.Tokens (Token(..), Position)
 
 -- |Represents possible states of DFAs
 data State = Interim Int -- ^state is an intermediate state
@@ -32,19 +31,29 @@ data State = Interim Int -- ^state is an intermediate state
            | NoState -- ^no matches so machine in error state
            deriving Eq
            
--- |Transitions occur to another State when Regex is matched
--- (Regex should be single character or empty).
-type Transition = (Regex, State)
+-- |DFA
+type DFA st = ([st], [Char], st -> Char -> st, st, st -> Bool)
 
--- |A DFA is represented by list of all possible transitions;
--- rule priority is implemented by putting higher priority
--- rules earlier in this list
-type DFA = [Transition]
+type ConfigDFA st = (st, String)
 
--- |Translate a regex into a 
-regexToDFA :: Regex -> DFA
-           
--- |Applying DFA rules to a Char input when DFA is in given State,
--- results in a new State
-transition :: Char -> DFA -> State -> State
-transition c d s = if (c == 
+initConfigDFA :: DFA st -> String -> ConfigDFA st
+initConfigDFA (qs,sigma,delta,s,inF) w = (s,w)
+
+nextConfigDFA :: DFA st -> ConfigDFA st -> Maybe (ConfigDFA st)
+nextConfigDFA (qs,sigma,delta,s,inF) (q,[]) = Nothing
+nextConfigDFA (qs,sigma,delta,s,inF) (q,a:w) = Just (delta q a, w)
+
+runDFA :: DFA st -> String -> ConfigDFA st
+runDFA dfa w = run (initConfigDFA dfa w) where
+    run conf = case (nextConfigDFA dfa conf) of
+                    Nothing -> conf
+                    Just newConf -> run newConf
+                    
+acceptConfigDFA :: DFA st -> ConfigDFA st -> Bool
+acceptConfigDFA (qs,sigma,delta,s,inF) (q,[]) = inF q
+acceptConfigDFA _ _ = False
+
+execDFA :: DFA st -> String -> Bool
+execDFA dfa w = acceptConfigDFA dfa (runDFA dfa w)
+
+
