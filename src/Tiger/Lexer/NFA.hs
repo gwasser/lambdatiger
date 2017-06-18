@@ -59,7 +59,10 @@ type NFA = [ ((State, SymbolOrEmpty), [State]) ]
 
 -- |Convert a Regex into NFA
 regexToNFA :: Regex -> NFA
+regexToNFA Epsilon = [(((Initial 0), Empty), [(Final 1)])]
+regexToNFA (Exact a) = [(((Initial 0), Symbol a), [(Final 1)])]
 regexToNFA re = constructSubNFA 0 re
-    where constructSubNFA n Epsilon = [(((Initial n), Empty), [(Final (n+1))])]
-          constructSubNFA n (Exact a) = [(((Initial n), Symbol a), [(Final (n+1))])]
+    where constructSubNFA n Epsilon = [(((Interim n), Empty), [(Interim (n+1))])]
+          constructSubNFA n (Exact a) = [(((Interim n), Symbol a), [(Interim (n+1))])]
+          constructSubNFA n (Concat r1 r2) = [(((Interim n), Empty), [(Interim (n+1))])]
           constructSubNFA _ _ = undefined
