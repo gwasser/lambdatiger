@@ -27,18 +27,18 @@ module Tiger.Lexer.Regex where
 -- |Represent a regular expression (possibly augmented)
 data Regex a = Exact Char -- |a single character
            | Epsilon -- |epsilon, or the empty string
-           | Alternate (Regex a) (Regex a) -- |A|B, match either A or B, for two regexes A and B
-           | Concat (Regex a) (Regex a) -- |AB, A followed by B, for two regexes A and B
-           | Repeat0 (Regex a) -- |*, zero or more occurrences of a regex
+           | Or (Regex a) (Regex a) -- |A|B, match either A or B, for two regexes A and B
+           | Cat (Regex a) (Regex a) -- |AB, A followed by B, for two regexes A and B
+           | Star (Regex a) -- |*, zero or more occurrences of a regex
            | Set String -- |Set of single characters that are acceptable for a match
            | Sentinel a -- |Sentinel marking end of regex to form an augmented regex, with parameterized meta info about accepting state
            deriving Eq
            
 (||) :: Regex a -> Regex a -> Regex a
-(||) r1 r2 = Alternate r1 r2
+(||) r1 r2 = Or r1 r2
 
 (**) :: Regex a -> Regex a -> Regex a
-(**) r1 r2 = Concat r1 r2
+(**) r1 r2 = Cat r1 r2
 
 strToRegexCharSet :: String -> [Regex a]
 strToRegexCharSet [] = []

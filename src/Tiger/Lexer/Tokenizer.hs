@@ -37,7 +37,8 @@ type Position = Int
 newtype TokenWithMeta = TokenWithMeta Token (Position, Position)
 
 
--- |Translate a regex into a 
+-- |Translate a Regex into a DFA using implementation of
+-- algorithm presented in Section 3.9.5 of Aho et al.
 regexToDFA :: Regex a -> DFA
 regexToDFA = undefined
 
