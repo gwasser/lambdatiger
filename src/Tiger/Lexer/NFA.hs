@@ -58,7 +58,7 @@ data State = Interim Int -- ^state is an intermediate state
 type NFA = [ ((State, SymbolOrEmpty), [State]) ]
 
 -- |Convert a Regex into NFA
-regexToNFA :: Regex -> NFA
+regexToNFA :: Regex a -> NFA
 regexToNFA Epsilon = [(((Initial 0), Empty), [(Final 1)])]
 regexToNFA (Exact a) = [(((Initial 0), Symbol a), [(Final 1)])]
 regexToNFA re = constructSubNFA 0 re
