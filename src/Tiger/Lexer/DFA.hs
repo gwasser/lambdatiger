@@ -24,35 +24,49 @@
 -- Inspired by a similar implementation from Daniele Micciancio,
 -- <https://cseweb.ucsd.edu/classes/wi14/cse105-a/haskell/intro.html>.
 module Tiger.Lexer.DFA where
-
--- |Represents possible states of DFAs
-data State = Interim Int -- ^state is an intermediate state
-           | Final Token -- ^state is a final accepting state
-           | NoState -- ^no matches so machine in error state
-           deriving Eq
            
--- |DFA
+-- |DFA is defined by five properties:
+-- 1. list of possible states
+-- 2. set of accepted input characters (alphabet)
+-- 3. a transition function that takes a state and an input symbol
+--    and returns a new state
+-- 4. a state designated as the initial start state
+-- 5. set of final accepting states, here represented by a predicate
+--    that returns true if a given state is a final state
+-- The DFA is parameterized to wrap any type so any required
+-- metadata is included in the state st.
 type DFA st = ([st], [Char], st -> Char -> st, st, st -> Bool)
 
+-- |Current configuration of a DFA, consists of
+-- current state and the unprocessed remainder of input string
 type ConfigDFA st = (st, String)
 
+-- |Create an initial configuration for a DFA based on
+-- a given input String
 initConfigDFA :: DFA st -> String -> ConfigDFA st
 initConfigDFA (qs,sigma,delta,s,inF) w = (s,w)
 
+-- |Read a character from the input String and return a new
+-- configuration representing the state transitioned to,
+-- or a Nothing if no transition can be made
 nextConfigDFA :: DFA st -> ConfigDFA st -> Maybe (ConfigDFA st)
 nextConfigDFA (qs,sigma,delta,s,inF) (q,[]) = Nothing
 nextConfigDFA (qs,sigma,delta,s,inF) (q,a:w) = Just (delta q a, w)
 
+-- |Given a DFA and an input String, returns either a final
+-- state or an intermediate state (possibly the initial state)
+-- depending whether the input String was accepted or not
 runDFA :: DFA st -> String -> ConfigDFA st
 runDFA dfa w = run (initConfigDFA dfa w) where
     run conf = case (nextConfigDFA dfa conf) of
                     Nothing -> conf
                     Just newConf -> run newConf
-                    
+     
+-- |Return True if given configuration of a DFA is a final state
 acceptConfigDFA :: DFA st -> ConfigDFA st -> Bool
 acceptConfigDFA (qs,sigma,delta,s,inF) (q,[]) = inF q
-acceptConfigDFA _ _ = False
 
+-- |Return True if a given input String is accepted by a given DFA
 execDFA :: DFA st -> String -> Bool
 execDFA dfa w = acceptConfigDFA dfa (runDFA dfa w)
 
