@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Tiger.Lexer.Regex,
+  exposed-modules:     Tiger.Lexer.Tokenizer,
                        Tiger.Lexer.DFA,
                        Tiger.Lexer.Tokens,
                        Tiger.Parser.NanoParsec,

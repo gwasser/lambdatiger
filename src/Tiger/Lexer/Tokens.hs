@@ -28,14 +28,16 @@ module Tiger.Lexer.Tokens where
 -- Data type tokens have an additional constructor argument
 -- representing the value of the token.
 data Token = EOF 
+           | BOF -- beginning of file, e.g, start state
+           -- keywords
            | ARRAY 
            | BREAK 
            | DO 
            | ELSE 
            | END 
            | FOR 
-           | FUNCTION 
-           | IF 
+           | FUNCTION
+           | IF
            | IN 
            | LET 
            | NIL 
@@ -43,8 +45,9 @@ data Token = EOF
            | TO 
            | VAR 
            | THEN 
-           | TYPE 
+           | TYPE
            | WHILE 
+           -- operators
            | AMPERSAND 
            | COLON 
            | COMMA 
@@ -52,21 +55,25 @@ data Token = EOF
            | EQUAL 
            | GREATERTHAN 
            | GREATEROREQUAL 
-           | LBRACE 
-           | LBRACKET 
            | LESSTHAN 
            | LESSOREQUAL 
-           | LPAREN 
            | MINUS 
            | NOTEQUAL  -- <>
            | PERIOD 
            | PIPE 
            | PLUS 
+           | SEMICOLON 
+           | SLASH 
+           | STAR
+           -- identifiers
+           | ID String
+           -- numbers (integers)
+           | NUM Int
+           -- groupings
+           | LBRACE 
+           | LBRACKET 
+           | LPAREN 
            | RBRACE 
            | RBRACKET 
            | RPAREN 
-           | SEMICOLON 
-           | SLASH 
-           | STAR 
-           | ID String 
-           | NUM Int 
+           deriving (Eq, Show)

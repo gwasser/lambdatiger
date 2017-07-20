@@ -22,14 +22,23 @@
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexer.Regex (Regex(..))
 import Tiger.Lexer.DFA (DFA, runDFA, execDFA)
+import Tiger.Lexer.Tokens (Token(..))
+import Tiger.Lexer.Tokenizer (TokenState(..), tigerTokenizer)
 
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "All Unit Tests" [dfaTests]
+tests = testGroup "All Unit Tests" [dfaTests, tokenizerTests]
 
+tokenizerTests = testGroup "Unit Tests for Tokenizer" [testTokenizerArray1,testTokenizerArray2,testTokenizerBreak1]
+
+testTokenizerArray1 =
+  testCase "see if Tokenizer accepts input 'array'" $ assertEqual [] True (execDFA tigerTokenizer "array")
+testTokenizerArray2 =
+  testCase "see if Tokenizer accepts input 'array' in state ARRAY" $ assertEqual [] (TokenState ARRAY,([],"array")) (runDFA tigerTokenizer "array")
+testTokenizerBreak1 =
+  testCase "Tokenizer should NOT accept input '_break'" $ assertEqual [] False (execDFA tigerTokenizer "4break")
 
 
 dfaTests = testGroup "Unit Tests for DFAs" [testExecDFA1,testRunDFA1,testExecDFA2]
@@ -52,7 +61,7 @@ dfa1inF _ = False
 testExecDFA1 =
   testCase "see if DFA for (a|b)*abb accepts input 'ababb'" $ assertEqual [] True (execDFA dfa1 "ababb")
 testRunDFA1 =
-  testCase "see if DFA for (a|b)*abb accepts input 'ababb' in state 3" $ assertEqual [] (3,[]) (runDFA dfa1 "ababb")
+  testCase "see if DFA for (a|b)*abb accepts input 'ababb' in state 3" $ assertEqual [] (3,([],"ababb")) (runDFA dfa1 "ababb")
 testExecDFA2 =
   testCase "DFA for (a|b)*abb should NOT accept input 'ababaa'" $ assertEqual [] False (execDFA dfa1 "ababaa")
 

@@ -38,20 +38,21 @@ module Tiger.Lexer.DFA where
 type DFA st = ([st], [Char], st -> Char -> st, st, st -> Bool)
 
 -- |Current configuration of a DFA, consists of
--- current state and the unprocessed remainder of input string
-type ConfigDFA st = (st, String)
+-- current state, the unprocessed remainder of input string,
+-- and the processed input in case needed for an identifier
+type ConfigDFA st = (st, (String, String))
 
 -- |Create an initial configuration for a DFA based on
 -- a given input String
 initConfigDFA :: DFA st -> String -> ConfigDFA st
-initConfigDFA (qs,sigma,delta,s,inF) w = (s,w)
+initConfigDFA (qs,sigma,delta,s,inF) w = (s,(w,[]))
 
 -- |Read a character from the input String and return a new
 -- configuration representing the state transitioned to,
 -- or a Nothing if no transition can be made
 nextConfigDFA :: DFA st -> ConfigDFA st -> Maybe (ConfigDFA st)
-nextConfigDFA (qs,sigma,delta,s,inF) (q,[]) = Nothing
-nextConfigDFA (qs,sigma,delta,s,inF) (q,a:w) = Just (delta q a, w)
+nextConfigDFA (qs,sigma,delta,s,inF) (q,([],i)) = Nothing
+nextConfigDFA (qs,sigma,delta,s,inF) (q,(a:w,i)) = Just (delta q a, (w, i++[a]))
 
 -- |Given a DFA and an input String, returns either a final
 -- state or an intermediate state (possibly the initial state)
@@ -62,12 +63,14 @@ runDFA dfa w = run (initConfigDFA dfa w) where
                     Nothing -> conf
                     Just newConf -> run newConf
                     
+-- |Simulate the DFA and then return the accepting state,
+-- discarding any unused input
 runDFAst :: DFA st -> String -> st
 runDFAst dfa w = fst (runDFA dfa w)
      
 -- |Return True if given configuration of a DFA is a final state
 acceptConfigDFA :: DFA st -> ConfigDFA st -> Bool
-acceptConfigDFA (qs,sigma,delta,s,inF) (q,[]) = inF q
+acceptConfigDFA (qs,sigma,delta,s,inF) (q,([],i)) = inF q
 
 -- |Return True if a given input String is accepted by a given DFA
 execDFA :: DFA st -> String -> Bool
