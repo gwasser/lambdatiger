@@ -31,14 +31,22 @@ main = defaultMain tests
 tests :: TestTree
 tests = testGroup "All Unit Tests" [dfaTests, tokenizerTests]
 
-tokenizerTests = testGroup "Unit Tests for Tokenizer" [testTokenizerArray1,testTokenizerArray2,testTokenizerBreak1]
+tokenizerTests = testGroup "Unit Tests for Tokenizer" [testTokenizerArray1, testTokenizerArray2, testTokenizerArray3, testTokenizerArray4, testTokenizerArray5, testTokenizerArray6, testTokenizerBreak1]
 
 testTokenizerArray1 =
   testCase "see if Tokenizer accepts input 'array'" $ assertEqual [] True (execDFA tigerTokenizer "array")
 testTokenizerArray2 =
   testCase "see if Tokenizer accepts input 'array' in state ARRAY" $ assertEqual [] (TokenState ARRAY,([],"array")) (runDFA tigerTokenizer "array")
+testTokenizerArray3 =
+  testCase "see if Tokenizer accepts input 'arrays'" $ assertEqual [] True (execDFA tigerTokenizer "arrays")
+testTokenizerArray4 =
+  testCase "see if Tokenizer accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (TokenState (ID "arrays"),([],"arrays")) (runDFA tigerTokenizer "arrays")
+testTokenizerArray5 =
+  testCase "see if Tokenizer accepts input 'arra'" $ assertEqual [] True (execDFA tigerTokenizer "arra")
+testTokenizerArray6 =
+  testCase "see if Tokenizer accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (TokenState (ID "arra"),([],"arra")) (runDFA tigerTokenizer "arra")
 testTokenizerBreak1 =
-  testCase "Tokenizer should NOT accept input '_break'" $ assertEqual [] False (execDFA tigerTokenizer "4break")
+  testCase "Tokenizer should NOT accept input 'br+eak'" $ assertEqual [] False (execDFA tigerTokenizer "br+eak")
 
 
 dfaTests = testGroup "Unit Tests for DFAs" [testExecDFA1,testRunDFA1,testExecDFA2]
