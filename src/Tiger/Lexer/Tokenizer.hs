@@ -62,8 +62,14 @@ tigerDelta (TokenState BOF) c
     | c == '/' = TokenState (SLASH)
     | otherwise = error "Couldn't tokenize input"
 tigerDelta (TokenState (ID "arra")) 'y' = TokenState (ARRAY)
+tigerDelta (TokenState (ARRAY)) c
+    | c `elem` identifiers = TokenState (ID ("array"++[c]))
 tigerDelta (TokenState (ID "brea")) 'k' = TokenState (BREAK)
+tigerDelta (TokenState (BREAK)) c
+    | c `elem` identifiers = TokenState (ID ("break"++[c]))
 tigerDelta (TokenState (ID "d")) 'o' = TokenState (DO)
+tigerDelta (TokenState (DO)) c
+    | c `elem` identifiers = TokenState (ID ("do"++[c]))
 tigerDelta (TokenState (ID i)) c
     | c `elem` identifiers = TokenState (ID (i++[c]))
 
