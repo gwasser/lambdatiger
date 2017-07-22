@@ -37,7 +37,7 @@ data LexerState = LexerState { current :: Token,
                              } deriving (Eq, Show)
 
 -- |Tiger Tokenizer
-tigerTokenizer = (tigerStates, alphabet, tigerDelta, lexerInitState, tigerinF) :: DFA LexerState
+tigerDFA = (tigerStates, alphabet, tigerDelta, lexerInitState, tigerinF) :: DFA LexerState
 
 lexerInitState = LexerState { current = BOF,
                               line = 0,
@@ -54,11 +54,15 @@ lower = "abcdefghijklmnopqrstuvwxyz"
 upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 digits = "0123456789"
 ops = "+-*/&|.,:;<>=(){}[]"
-whitespace = " \n\t"
+whitespace = spaces ++ newline
+spaces = " \t"
+newline = "\n"
  
 tigerinF (LexerState {current = BOF}) = False
+tigerinF (LexerState {current = UNACCEPTED}) = False
 tigerinF _ = True
 
+-- from initial state
 tigerDelta (LexerState {current=BOF, line=l, col=n}) c
     | c `elem` letters = LexerState {current=ID [c], line=l, col=(n+1)}
     | c `elem` digits = LexerState {current=NUM ((read [c]) :: Int), line=l, col=(n+1)}
@@ -68,17 +72,38 @@ tigerDelta (LexerState {current=BOF, line=l, col=n}) c
     | c == '*' = LexerState {current=STAR, line=l, col=(n+1)}
     | c == '/' = LexerState {current=SLASH, line=l, col=(n+1)}
     | otherwise = error "Couldn't tokenize input"
-tigerDelta (LexerState {current=ID "arra", line=l, col=n}) 'y' = LexerState {current=ARRAY, line=l, col=(n+1)}
-tigerDelta (LexerState {current=(ARRAY), line=l, col=n}) c
-    | c `elem` identifiers = LexerState {current=ID ("array"++[c]), line=l, col=(n+1)}
-tigerDelta (LexerState {current=(ID "brea"), line=l, col=n}) 'k' = LexerState {current=BREAK, line=l, col=(n+1)}
-tigerDelta (LexerState {current=(BREAK), line=l, col=n}) c
-    | c `elem` identifiers = LexerState {current=ID ("break"++[c]), line=l, col=(n+1)}
-tigerDelta (LexerState {current=(ID "d"), line=l, col=n}) 'o' = LexerState {current=DO, line=l, col=(n+1)}
-tigerDelta (LexerState {current=(DO), line=l, col=n}) c
-    | c `elem` identifiers = LexerState {current=ID ("do"++[c]), line=l, col=(n+1)}
-tigerDelta (LexerState {current=(ID i), line=l, col=n}) c
-    | c `elem` identifiers = LexerState {current=ID (i++[c]), line=l, col=(n+1)}
+
+tigerDelta (LexerState {current=cur, line=l, col=n}) c = LexerState {current=newcur, line=newl, col=newn}
+    where newn = n+1
+          newl = l
+          newcur = if c `elem` alphabet
+                      then transition cur c
+                      else error "Input not in accepted alphabet"
+          
+          transition :: Token -> Char -> Token
+          transition (ID "arra") 'y' = ARRAY
+          transition (ARRAY) c' = ID ("array"++[c'])
+          transition (ID "brea") 'k' = BREAK
+          transition (BREAK) c' = ID ("break"++[c'])
+          transition (ID "d") 'o' = DO
+          transition (DO) c' = ID ("do"++[c'])
+          transition (ID i) c'
+              | c `elem` identifiers = ID (i++[c'])
+          transition _ _ = UNACCEPTED
+          
+          
+
+--tigerDelta (LexerState {current=ID "arra", line=l, col=n}) 'y' = LexerState {current=ARRAY, line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(ARRAY), line=l, col=n}) c
+--    | c `elem` identifiers = LexerState {current=ID ("array"++[c]), line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(ID "brea"), line=l, col=n}) 'k' = LexerState {current=BREAK, line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(BREAK), line=l, col=n}) c
+--    | c `elem` identifiers = LexerState {current=ID ("break"++[c]), line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(ID "d"), line=l, col=n}) 'o' = LexerState {current=DO, line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(DO), line=l, col=n}) c
+--    | c `elem` identifiers = LexerState {current=ID ("do"++[c]), line=l, col=(n+1)}
+--tigerDelta (LexerState {current=(ID i), line=l, col=n}) c
+--    | c `elem` identifiers = LexerState {current=ID (i++[c]), line=l, col=(n+1)}
 
 
 

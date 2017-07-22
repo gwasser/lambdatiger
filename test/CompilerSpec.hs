@@ -24,29 +24,29 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 
 import Tiger.Lexer.DFA (DFA, StateConfig(..), runDFA, execDFA)
 import Tiger.Lexer.Tokens (Token(..))
-import Tiger.Lexer.Tokenizer (LexerState(..), tigerTokenizer)
+import Tiger.Lexer.Tokenizer (LexerState(..), tigerDFA)
 
 main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "All Unit Tests" [dfaTests, tokenizerTests]
 
-tokenizerTests = testGroup "Unit Tests for Tokenizer" [testTokenizerArray1, testTokenizerArray2, testTokenizerArray3, testTokenizerArray4, testTokenizerArray5, testTokenizerArray6, testTokenizerBreak1]
+tokenizerTests = testGroup "Unit Tests for Tiger DFA" [testtigerDFAArray1, testtigerDFAArray2, testtigerDFAArray3, testtigerDFAArray4, testtigerDFAArray5, testtigerDFAArray6, testtigerDFABreak1]
 
-testTokenizerArray1 =
-  testCase "see if Tokenizer accepts input 'array'" $ assertEqual [] True (execDFA tigerTokenizer "array")
-testTokenizerArray2 =
-  testCase "see if Tokenizer accepts input 'array' in state ARRAY" $ assertEqual [] (ARRAY) (current $ state $ runDFA tigerTokenizer "array")
-testTokenizerArray3 =
-  testCase "see if Tokenizer accepts input 'arrays'" $ assertEqual [] True (execDFA tigerTokenizer "arrays")
-testTokenizerArray4 =
-  testCase "see if Tokenizer accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (ID "arrays") (current $ state $ runDFA tigerTokenizer "arrays")
-testTokenizerArray5 =
-  testCase "see if Tokenizer accepts input 'arra'" $ assertEqual [] True (execDFA tigerTokenizer "arra")
-testTokenizerArray6 =
-  testCase "see if Tokenizer accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (ID "arra") (current $ state $ runDFA tigerTokenizer "arra")
-testTokenizerBreak1 =
-  testCase "Tokenizer should NOT accept input 'br+eak'" $ assertEqual [] False (execDFA tigerTokenizer "br+eak")
+testtigerDFAArray1 =
+  testCase "see if tigerDFA accepts input 'array'" $ assertEqual [] True (execDFA tigerDFA "array")
+testtigerDFAArray2 =
+  testCase "see if tigerDFA accepts input 'array' in state ARRAY" $ assertEqual [] (ARRAY) (current $ state $ runDFA tigerDFA "array")
+testtigerDFAArray3 =
+  testCase "see if tigerDFA accepts input 'arrays'" $ assertEqual [] True (execDFA tigerDFA "arrays")
+testtigerDFAArray4 =
+  testCase "see if tigerDFA accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (ID "arrays") (current $ state $ runDFA tigerDFA "arrays")
+testtigerDFAArray5 =
+  testCase "see if tigerDFA accepts input 'arra'" $ assertEqual [] True (execDFA tigerDFA "arra")
+testtigerDFAArray6 =
+  testCase "see if tigerDFA accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (ID "arra") (current $ state $ runDFA tigerDFA "arra")
+testtigerDFABreak1 =
+  testCase "tigerDFA should NOT accept input 'br+eak'" $ assertEqual [] False (execDFA tigerDFA "br+eak")
 
 
 dfaTests = testGroup "Unit Tests for DFAs" [testExecDFA1,testRunDFA1,testExecDFA2]

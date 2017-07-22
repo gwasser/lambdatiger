@@ -29,6 +29,7 @@ module Tiger.Lexer.Tokens where
 -- representing the value of the token.
 data Token = EOF 
            | BOF -- beginning of file, e.g, start state
+           | UNACCEPTED -- mark end of accepted input, or error
            -- keywords
            | ARRAY 
            | BREAK 
