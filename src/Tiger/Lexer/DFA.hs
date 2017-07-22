@@ -37,43 +37,44 @@ module Tiger.Lexer.DFA where
 -- metadata is included in the state st.
 type DFA st = ([st], [Char], st -> Char -> st, st, st -> Bool)
 
--- |Current configuration of a DFA, consists of
--- current state, the unprocessed remainder of input string,
+-- |Current configuration of a DFA, consists of two tuples:
+-- First tuple: staterent state, and previous state,
+-- Second tuple: unprocessed remainder of input string,
 -- and the processed input in case needed for an identifier
-type ConfigDFA st = (st, (String, String))
+data StateConfig st = StateConfig { state :: st, -- ^current state
+                                    input :: String -- ^ unprocessed input
+                                  } deriving (Show)
 
 -- |Create an initial configuration for a DFA based on
 -- a given input String
-initConfigDFA :: DFA st -> String -> ConfigDFA st
-initConfigDFA (qs,sigma,delta,s,inF) w = (s,(w,[]))
+initStateConfig :: DFA st -> String -> StateConfig st
+initStateConfig (qs,sigma,delta,s,inF) w = StateConfig { state = s,
+                                                         input = w
+                                                       }
 
 -- |Read a character from the input String and return a new
 -- configuration representing the state transitioned to,
 -- or a Nothing if no transition can be made
-nextConfigDFA :: DFA st -> ConfigDFA st -> Maybe (ConfigDFA st)
-nextConfigDFA (qs,sigma,delta,s,inF) (q,([],i)) = Nothing
-nextConfigDFA (qs,sigma,delta,s,inF) (q,(a:w,i)) = Just (delta q a, (w, i++[a]))
+nextStateConfig :: DFA st -> StateConfig st -> Maybe (StateConfig st)
+nextStateConfig (qs,sigma,delta,s,inF) sc = case sc of 
+    StateConfig {input=[]} -> Nothing
+    StateConfig {input=a:w, state=q} -> Just StateConfig {state = delta q a, input=w}
 
 -- |Given a DFA and an input String, returns either a final
 -- state or an intermediate state (possibly the initial state)
 -- depending whether the input String was accepted or not
-runDFA :: DFA st -> String -> ConfigDFA st
-runDFA dfa w = run (initConfigDFA dfa w) where
-    run conf = case (nextConfigDFA dfa conf) of
+runDFA :: DFA st -> String -> StateConfig st
+runDFA dfa w = run (initStateConfig dfa w) where
+    run conf = case (nextStateConfig dfa conf) of
                     Nothing -> conf
                     Just newConf -> run newConf
-                    
--- |Simulate the DFA and then return the accepting state,
--- discarding any unused input
-runDFAst :: DFA st -> String -> st
-runDFAst dfa w = fst (runDFA dfa w)
      
 -- |Return True if given configuration of a DFA is a final state
-acceptConfigDFA :: DFA st -> ConfigDFA st -> Bool
-acceptConfigDFA (qs,sigma,delta,s,inF) (q,([],i)) = inF q
+acceptStateConfig :: DFA st -> StateConfig st -> Bool
+acceptStateConfig (qs,sigma,delta,s,inF) (StateConfig {state=q, input=[]}) = inF q
 
 -- |Return True if a given input String is accepted by a given DFA
 execDFA :: DFA st -> String -> Bool
-execDFA dfa w = acceptConfigDFA dfa (runDFA dfa w)
+execDFA dfa w = acceptStateConfig dfa (runDFA dfa w)
 
 

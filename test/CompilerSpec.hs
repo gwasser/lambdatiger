@@ -22,9 +22,9 @@
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexer.DFA (DFA, runDFA, execDFA)
+import Tiger.Lexer.DFA (DFA, StateConfig(..), runDFA, execDFA)
 import Tiger.Lexer.Tokens (Token(..))
-import Tiger.Lexer.Tokenizer (TokenState(..), tigerTokenizer)
+import Tiger.Lexer.Tokenizer (LexerState(..), tigerTokenizer)
 
 main = defaultMain tests
 
@@ -36,15 +36,15 @@ tokenizerTests = testGroup "Unit Tests for Tokenizer" [testTokenizerArray1, test
 testTokenizerArray1 =
   testCase "see if Tokenizer accepts input 'array'" $ assertEqual [] True (execDFA tigerTokenizer "array")
 testTokenizerArray2 =
-  testCase "see if Tokenizer accepts input 'array' in state ARRAY" $ assertEqual [] (TokenState ARRAY,([],"array")) (runDFA tigerTokenizer "array")
+  testCase "see if Tokenizer accepts input 'array' in state ARRAY" $ assertEqual [] (LexerState ARRAY) (state $ runDFA tigerTokenizer "array")
 testTokenizerArray3 =
   testCase "see if Tokenizer accepts input 'arrays'" $ assertEqual [] True (execDFA tigerTokenizer "arrays")
 testTokenizerArray4 =
-  testCase "see if Tokenizer accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (TokenState (ID "arrays"),([],"arrays")) (runDFA tigerTokenizer "arrays")
+  testCase "see if Tokenizer accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (LexerState (ID "arrays")) (state $ runDFA tigerTokenizer "arrays")
 testTokenizerArray5 =
   testCase "see if Tokenizer accepts input 'arra'" $ assertEqual [] True (execDFA tigerTokenizer "arra")
 testTokenizerArray6 =
-  testCase "see if Tokenizer accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (TokenState (ID "arra"),([],"arra")) (runDFA tigerTokenizer "arra")
+  testCase "see if Tokenizer accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (LexerState (ID "arra")) (state $ runDFA tigerTokenizer "arra")
 testTokenizerBreak1 =
   testCase "Tokenizer should NOT accept input 'br+eak'" $ assertEqual [] False (execDFA tigerTokenizer "br+eak")
 
@@ -69,7 +69,7 @@ dfa1inF _ = False
 testExecDFA1 =
   testCase "see if DFA for (a|b)*abb accepts input 'ababb'" $ assertEqual [] True (execDFA dfa1 "ababb")
 testRunDFA1 =
-  testCase "see if DFA for (a|b)*abb accepts input 'ababb' in state 3" $ assertEqual [] (3,([],"ababb")) (runDFA dfa1 "ababb")
+  testCase "see if DFA for (a|b)*abb accepts input 'ababb' in state 3" $ assertEqual [] (3) (state $ runDFA dfa1 "ababb")
 testExecDFA2 =
   testCase "DFA for (a|b)*abb should NOT accept input 'ababaa'" $ assertEqual [] False (execDFA dfa1 "ababaa")
 
