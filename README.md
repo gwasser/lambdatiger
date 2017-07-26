@@ -45,10 +45,12 @@ The `tigerc` project is an attempt at a Haskell implementation of a similar Tige
 
 Aside from the main text, the following may be useful:
 
-* Diehl, Stephen. _Write You a Haskell_. <http://dev.stephendiehl.com/fun/>.
-* Pfenning, Frank, et al. _CMU 15-411 Lecture Notes_. <https://www.cs.cmu.edu/~fp/courses/15411-f13/>
-* Aho, Alfred, et al. _Compilers: Principles, Techniques, and Tools_. 2nd Edition. Pearson Education, 2007. (also known as "The Dragon Book")
+* Dornan, Chris, et al. _Alex User Guide_. <https://www.haskell.org/alex/doc/html/index.html>.
+* Bhattacharya, Jyotirmoy. _Alex and Happy: Lexers and Parsers in Haskell_. Lean Publishing, 2015. <https://leanpub.com/alexandhappy>.
 * Ranta, Aarne. _Implementing Programming Languages: An Introduction to Compilers and Interpreters_.
+* Aho, Alfred, et al. _Compilers: Principles, Techniques, and Tools_ (also known as "The Dragon Book"). 2nd Edition. Pearson Education, 2007.
+* Pfenning, Frank, et al. _CMU 15-411 Lecture Notes_. <https://www.cs.cmu.edu/~fp/courses/15411-f13/>.
+* Diehl, Stephen. _Write You a Haskell_. <http://dev.stephendiehl.com/fun/>.
 
 A larger list that I haven't read much yet is [Awesome Compilers](https://github.com/aalhour/awesome-compilers), but I'm putting it here to help myself and others.
 

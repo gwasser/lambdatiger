@@ -22,55 +22,36 @@
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexer.DFA (DFA, StateConfig(..), runDFA, execDFA)
+import Tiger.Lexer.Tokenizer (alexScanTokens)
 import Tiger.Lexer.Tokens (Token(..))
-import Tiger.Lexer.Tokenizer (LexerState(..), tigerDFA)
 
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "All Unit Tests" [dfaTests, tokenizerTests]
+tests = testGroup "All Unit Tests" [tokenizerTests]
 
-tokenizerTests = testGroup "Unit Tests for Tiger DFA" [testtigerDFAArray1, testtigerDFAArray2, testtigerDFAArray3, testtigerDFAArray4, testtigerDFAArray5, testtigerDFAArray6, testtigerDFABreak1]
+tokenizerTests = testGroup "Unit Tests for Alex-based Tiger Lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerBoolArith, testLexerParens]
 
-testtigerDFAArray1 =
-  testCase "see if tigerDFA accepts input 'array'" $ assertEqual [] True (execDFA tigerDFA "array")
-testtigerDFAArray2 =
-  testCase "see if tigerDFA accepts input 'array' in state ARRAY" $ assertEqual [] (ARRAY) (current $ state $ runDFA tigerDFA "array")
-testtigerDFAArray3 =
-  testCase "see if tigerDFA accepts input 'arrays'" $ assertEqual [] True (execDFA tigerDFA "arrays")
-testtigerDFAArray4 =
-  testCase "see if tigerDFA accepts input 'arrays' in state (ID 'arrays')" $ assertEqual [] (ID "arrays") (current $ state $ runDFA tigerDFA "arrays")
-testtigerDFAArray5 =
-  testCase "see if tigerDFA accepts input 'arra'" $ assertEqual [] True (execDFA tigerDFA "arra")
-testtigerDFAArray6 =
-  testCase "see if tigerDFA accepts input 'arra' in state (ID 'arra')" $ assertEqual [] (ID "arra") (current $ state $ runDFA tigerDFA "arra")
-testtigerDFABreak1 =
-  testCase "tigerDFA should NOT accept input 'br+eak'" $ assertEqual [] False (execDFA tigerDFA "br+eak")
+testLexerARRAY =
+  testCase "accepts input 'array' as ARRAY" $ assertEqual [] (ARRAY) (head $ alexScanTokens "array")
+testLexerArraysID =
+  testCase "accepts input 'arrays' as (ID 'arrays')" $ assertEqual [] (ID "arrays") (head $ alexScanTokens "arrays")
+testLexerArraID =
+  testCase "accepts input 'arra' as (ID 'arra')" $ assertEqual [] (ID "arra") (head $ alexScanTokens "arra")
+testLexerIfThenElse =
+  testCase "accepts input 'if x then y else z' as [IF, ID 'x', THEN, ID 'y', ELSE, ID 'z']" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z"]) (alexScanTokens "if x then y else z")
+testLexerWhileDo =
+  testCase "accepts input 'while isTrue do 1234' as [WHILE, ID 'isTrue', DO, NUM 1234]" $ assertEqual [] ([WHILE, ID "isTrue", DO, NUM 1234]) (alexScanTokens "while isTrue do 1234")
+testLexerIgnoreComments =
+  testCase "accepts input 'for t0 /* some comment */ in someList' as [FOR, ID 't0', IN, ID 'someList']" $ assertEqual [] ([FOR, ID "t0", IN, ID "someList"]) (alexScanTokens "for t0 /* some comment */ in someList")
+testLexerArith =
+  testCase "accepts input 'x = y + 42' as [ID 'x', EQUAL, ID 'y', PLUS, NUM 42]" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42]) (alexScanTokens "x = y + 42")
+testLexerBoolArith =
+  testCase "accepts input 'b := a | b & c;' as [ID 'b', DEFINE, ID 'a', PIPE, ID 'b', AMPERSAND, ID 'c', SEMICOLON]" $ assertEqual [] ([ID "b", DEFINE, ID "a", PIPE, ID "b", AMPERSAND, ID "c", SEMICOLON]) (alexScanTokens "b := a | b & c;")
+testLexerParens =
+  testCase "accepts input '12* (42 - 17)/{5}   +a[1]' as [NUM 12, STAR, LPAREN, NUM 42, MINUS, NUM 17, RPAREN, SLASH, LBRACE, NUM 5, RBRACE, PLUS, ID 'a', LBRACKET, NUM 1, RBRACKET]" $ assertEqual [] ([NUM 12, STAR, LPAREN, NUM 42, MINUS, NUM 17, RPAREN, SLASH, LBRACE, NUM 5, RBRACE, PLUS, ID "a", LBRACKET, NUM 1, RBRACKET]) (alexScanTokens "12* (42 - 17)/{5}   +a[1]")
+--testtigerDFABreak1 =
+--  testCase "tigerDFA should NOT accept input 'br+eak'" $ assertEqual [] False (alexScanTokens "br+eak")
 
-
-dfaTests = testGroup "Unit Tests for DFAs" [testExecDFA1,testRunDFA1,testExecDFA2]
-
--- example of DFA for RE (a|b)*abb, with input String of "ababb",
--- from Example 3.19, page 150, of Aho et al.
-dfa1 = (dfa1st, dfa1alphabet, dfa1delta, 0, dfa1inF) :: DFA Int
-dfa1st = [0,1,2,3]
-dfa1alphabet = ['a','b']
-dfa1delta 0 'a' = 1
-dfa1delta 0 'b' = 0
-dfa1delta 1 'a' = 1
-dfa1delta 1 'b' = 2
-dfa1delta 2 'a' = 1
-dfa1delta 2 'b' = 3
-dfa1delta 3 'a' = 1
-dfa1delta 3 'b' = 0
-dfa1inF 3 = True
-dfa1inF _ = False
-testExecDFA1 =
-  testCase "see if DFA for (a|b)*abb accepts input 'ababb'" $ assertEqual [] True (execDFA dfa1 "ababb")
-testRunDFA1 =
-  testCase "see if DFA for (a|b)*abb accepts input 'ababb' in state 3" $ assertEqual [] (3) (state $ runDFA dfa1 "ababb")
-testExecDFA2 =
-  testCase "DFA for (a|b)*abb should NOT accept input 'ababaa'" $ assertEqual [] False (execDFA dfa1 "ababaa")
 
 
