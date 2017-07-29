@@ -68,6 +68,8 @@ data Token = EOF
            | ID String
            -- numbers (integers)
            | NUM Int
+           -- string literal
+           | STR String
            -- groupings
            | LBRACE 
            | LBRACKET 
