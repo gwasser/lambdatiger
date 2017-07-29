@@ -25,7 +25,7 @@ module Tiger.REPL.Pretty (
   ppexpr
 ) where
 
-import Tiger.Parser.Syntax
+import Tiger.Parser.AST
 
 import Text.PrettyPrint (Doc, (<>), (<+>))
 import qualified Text.PrettyPrint as PP

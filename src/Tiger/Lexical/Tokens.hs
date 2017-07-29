@@ -20,7 +20,7 @@
 -}
 
 
-module Tiger.Lexer.Tokens where
+module Tiger.Lexical.Tokens where
 
 -- |A Token of the Tiger language as read by the lexer.
 -- Tokens consist of all keywords, punctuation, and data types

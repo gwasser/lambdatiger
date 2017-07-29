@@ -28,7 +28,7 @@ module Tiger.REPL.Interpreter
 import Control.Applicative
 import Data.Maybe
 
-import Tiger.Parser.Syntax
+import Tiger.Parser.AST
 
 isNum :: Expr -> Bool
 isNum Zero = True

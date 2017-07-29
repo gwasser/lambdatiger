@@ -22,8 +22,8 @@
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexer.Tokenizer (alexScanTokens)
-import Tiger.Lexer.Tokens (Token(..))
+import Tiger.Lexical.Lexer (alexScanTokens)
+import Tiger.Lexical.Tokens (Token(..))
 
 main = defaultMain tests
 

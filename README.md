@@ -46,6 +46,7 @@ The `tigerc` project is an attempt at a Haskell implementation of a similar Tige
 Aside from the main text, the following may be useful:
 
 * Dornan, Chris, et al. _Alex User Guide_. <https://www.haskell.org/alex/doc/html/index.html>.
+* Marlow, Simon, et al. _Happy User Guide_. <https://www.haskell.org/happy/doc/html/>.
 * Bhattacharya, Jyotirmoy. _Alex and Happy: Lexers and Parsers in Haskell_. Lean Publishing, 2015. <https://leanpub.com/alexandhappy>.
 * Ranta, Aarne. _Implementing Programming Languages: An Introduction to Compilers and Interpreters_.
 * Aho, Alfred, et al. _Compilers: Principles, Techniques, and Tools_ (also known as "The Dragon Book"). 2nd Edition. Pearson Education, 2007.

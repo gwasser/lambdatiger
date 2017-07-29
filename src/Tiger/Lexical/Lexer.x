@@ -19,8 +19,8 @@
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
 -- exports alexScanTokens :: String -> [Token]
-module Tiger.Lexer.Tokenizer (alexScanTokens) where 
-import Tiger.Lexer.Tokens (Token(..))
+module Tiger.Lexical.Lexer (alexScanTokens) where 
+import Tiger.Lexical.Tokens (Token(..))
 }
 
 %wrapper "basic"
@@ -36,6 +36,7 @@ tokens :-
   break                 { \s -> BREAK }
   do                    { \s -> DO }
   else                  { \s -> ELSE }
+  end                   { \s -> END }
   for                   { \s -> FOR }
   function              { \s -> FUNCTION }
   if                    { \s -> IF }
