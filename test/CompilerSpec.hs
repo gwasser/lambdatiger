@@ -30,7 +30,7 @@ main = defaultMain tests
 tests :: TestTree
 tests = testGroup "All Unit Tests" [tokenizerTests]
 
-tokenizerTests = testGroup "Unit Tests for Alex-based Tiger Lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerBoolArith, testLexerParens]
+tokenizerTests = testGroup "Unit Tests for Alex-based Tiger Lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerBoolArith, testLexerParens, testLexerNestedComments, testStringLiterals]
 
 testLexerARRAY =
   testCase "accepts input 'array' as ARRAY" $ assertEqual [] (ARRAY) (head $ alexScanTokens "array")
@@ -50,6 +50,10 @@ testLexerBoolArith =
   testCase "accepts input 'b := a | b & c;' as [ID 'b', DEFINE, ID 'a', PIPE, ID 'b', AMPERSAND, ID 'c', SEMICOLON]" $ assertEqual [] ([ID "b", DEFINE, ID "a", PIPE, ID "b", AMPERSAND, ID "c", SEMICOLON]) (alexScanTokens "b := a | b & c;")
 testLexerParens =
   testCase "accepts input '12* (42 - 17)/{5}   +a[1]' as [NUM 12, STAR, LPAREN, NUM 42, MINUS, NUM 17, RPAREN, SLASH, LBRACE, NUM 5, RBRACE, PLUS, ID 'a', LBRACKET, NUM 1, RBRACKET]" $ assertEqual [] ([NUM 12, STAR, LPAREN, NUM 42, MINUS, NUM 17, RPAREN, SLASH, LBRACE, NUM 5, RBRACE, PLUS, ID "a", LBRACKET, NUM 1, RBRACKET]) (alexScanTokens "12* (42 - 17)/{5}   +a[1]")
+testLexerNestedComments =
+  testCase "accepts input 'x = y /* outer /* some inner comment */ outer */ + 42' as [ID 'x', EQUAL, ID 'y', PLUS, NUM 42]" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42]) (alexScanTokens "x = y /* outer /* some inner comment */ outer */ + 42")
+testStringLiterals =
+    testCase "accepts input 'if \"string\" = \"other\" then x' as [IF, STR 'string', EQUAL, STR 'other', THEN, ID 'x']" $ assertEqual [] ([IF, STR "string", EQUAL, STR "other", THEN, ID "x"]) (alexScanTokens "if \"string\" = \"other\" then x")
 --testtigerDFABreak1 =
 --  testCase "tigerDFA should NOT accept input 'br+eak'" $ assertEqual [] False (alexScanTokens "br+eak")
 
