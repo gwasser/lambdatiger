@@ -33,11 +33,11 @@ tests = testGroup "All Unit Tests" [tokenizerTests]
 tokenizerTests = testGroup "Unit Tests for Alex-based Tiger Lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerBoolArith, testLexerParens, testLexerNestedComments, testStringLiterals]
 
 testLexerARRAY =
-  testCase "accepts input 'array' as ARRAY" $ assertEqual [] (ARRAY) (head $ alexScanTokens "array")
+  testCase "accepts input 'array' as ARRAY" $ assertEqual [] ([ARRAY]) (alexScanTokens "array")
 testLexerArraysID =
-  testCase "accepts input 'arrays' as (ID 'arrays')" $ assertEqual [] (ID "arrays") (head $ alexScanTokens "arrays")
+  testCase "accepts input 'arrays' as (ID 'arrays')" $ assertEqual [] ([ID "arrays"]) (alexScanTokens "arrays")
 testLexerArraID =
-  testCase "accepts input 'arra' as (ID 'arra')" $ assertEqual [] (ID "arra") (head $ alexScanTokens "arra")
+  testCase "accepts input 'arra' as (ID 'arra')" $ assertEqual [] ([ID "arra"]) (alexScanTokens "arra")
 testLexerIfThenElse =
   testCase "accepts input 'if x then y else z' as [IF, ID 'x', THEN, ID 'y', ELSE, ID 'z']" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z"]) (alexScanTokens "if x then y else z")
 testLexerWhileDo =
