@@ -17,8 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Tiger.Lexical.Lexer,
                        Tiger.Lexical.Tokens,
-                       Tiger.Syntax.Parser,
-                       Tiger.Syntax.AST
+                       Tiger.Syntactic.AST,
+                       Tiger.Syntactic.Parser
   build-depends:       base,
                        array,
                        containers,
@@ -47,16 +47,6 @@ test-suite tigerc-test
                        tasty-hunit,
                        tigerc
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
-  
-executable tigeri
-  hs-source-dirs:      app
-  main-is:             InterpreterMain.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base,
-                       mtl,
-                       haskeline,
-                       tigerc
   default-language:    Haskell2010
 
 source-repository head

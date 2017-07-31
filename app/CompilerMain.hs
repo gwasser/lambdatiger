@@ -34,8 +34,8 @@ main = getArgs >>= parseArgs
 
 parseArgs ["-h"] = usage   >> exit
 parseArgs ["-v"] = version >> exit
-parseArgs []     = print $ getContents
-parseArgs fs     = print $ concat `fmap` mapM readFile fs
+--parseArgs []     = print $ getContents
+--parseArgs fs     = print $ concat `fmap` mapM readFile fs
 
 usage   = putStrLn "Usage: tigerc [-vh] [file ..]"
 version = putStrLn "tigerc - compiler for Tiger language" >> putStrLn "version 0.1.0.0"
