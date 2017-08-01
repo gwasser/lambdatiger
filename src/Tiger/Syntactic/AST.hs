@@ -23,7 +23,7 @@ module Tiger.Syntactic.AST where
 
 -- a Tiger program is simply an expression
 data Program = Program Exp
-                deriving Show
+                deriving (Show, Eq)
 
 -- appendix A.3 of Appel defines Expressions,
 -- figure 4.8 gives suggested abstract syntax
@@ -43,25 +43,25 @@ data Exp
       | BreakExp
       | LetExp { decls :: [Decl], lbody :: Exp }
       | ArrayExp { atyp :: Symbol, size :: Exp, ainit :: Exp }
-      deriving Show
+      deriving (Show, Eq)
       
 data Var
     = SimpleVar Symbol
     | FieldVar Var Symbol
     | SubscriptVar Var Exp
-    deriving Show
+    deriving (Show, Eq)
     
 data Decl
     = FunDecls [FunDecl]
     | VarDecl { vname :: Symbol, vescape :: Bool, vtyp :: Maybe Symbol, vinit :: Exp }
     | TypeDecl { tname :: Symbol, ttyp :: Type }
-    deriving Show
+    deriving (Show, Eq)
     
 data Type
     = NameType Symbol
     | RecordType [Field]
     | ArrayType Symbol
-    deriving Show
+    deriving (Show, Eq)
     
 data Op
     = Add
@@ -74,10 +74,10 @@ data Op
     | LessThan
     | GreaterEqual
     | LessEqual
-    deriving Show
+    deriving (Show, Eq)
     
 type Symbol = String
 
-data Field = Field { fieldname :: Symbol, escape :: Bool, typ :: Symbol } deriving Show
+data Field = Field { fieldname :: Symbol, escape :: Bool, typ :: Symbol } deriving (Show, Eq)
       
-data FunDecl = FunDecl { fundeclname :: Symbol, params :: [Field], result :: Maybe Symbol, body :: Exp } deriving Show
+data FunDecl = FunDecl { fundeclname :: Symbol, params :: [Field], result :: Maybe Symbol, body :: Exp } deriving (Show, Eq)

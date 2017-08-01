@@ -112,7 +112,7 @@ exp         : NIL                                                   { NilExp }
             | exp '<=' exp                                          { OpExp $1 LessEqual $3 }
             | ID '{' '}'                                            { RecordExp [] ($1 :: Symbol) }
             | ID '{' recflist '}'                                   { RecordExp $3 ($1 :: Symbol) }
-            | expseq                                                { SeqExp $1 }
+            | exp ';' exp                                           { SeqExp ($1 : [$3]) }
             | lvalue ':=' exp                                       { AssignExp $1 $3 }
             | IF exp THEN exp ELSE exp                              { IfExp $2 $4 (Just $6) }
             | IF exp THEN exp                                       { IfExp $2 $4 Nothing }
@@ -125,9 +125,6 @@ exp         : NIL                                                   { NilExp }
             
 explist     : exp                                                   { [$1] }
             | exp ',' explist                                       { $1 : $3 } 
-            
-expseq      : exp                                                   { [$1] }
-            | exp ';' expseq                                        { $1 : $3 }
             
 lvalue      : ID                                                    { SimpleVar ($1 :: Symbol) }
             | lvalue '.' ID                                         { FieldVar $1 ($3 :: Symbol) }
