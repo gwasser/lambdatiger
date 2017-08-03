@@ -79,7 +79,7 @@ tokens :-
   
   $digit+                       { \s -> NUM (read s :: Int) }
   $alpha [$alpha $digit \_]*    { \s -> ID s }
-  \"([^\\\"]|\\.)*\"            { \s -> STR (init $ tail s) }
+  \"([^\\\"]|\\.|$white+)*\"    { \s -> STR (init $ tail s) }
 
 {
 -- Each action has type :: String -> Token

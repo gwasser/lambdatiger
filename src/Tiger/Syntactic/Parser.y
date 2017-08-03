@@ -120,7 +120,7 @@ exp         : NIL                                                   { NilExp }
             | FOR ID ':=' exp TO exp DO exp                         { ForExp ($2 :: Symbol) True $4 $6 $8 }
             | BREAK                                                 { BreakExp }
             | LET decllist IN exp END                               { LetExp $2 $4 }
-            | ID '[' exp ']' OF exp                                 { ArrayExp ($1 :: Symbol) $3 $6 }
+            | ID '[' exp ']' OF exp                                 { ArrayExp ($1 :: Symbol)$3 $6 }
             | '(' exp ')'                                           { $2 }
             
 explist     : exp                                                   { [$1] }
@@ -128,10 +128,11 @@ explist     : exp                                                   { [$1] }
             
 lvalue      : ID                                                    { SimpleVar ($1 :: Symbol) }
             | lvalue '.' ID                                         { FieldVar $1 ($3 :: Symbol) }
+            | ID '[' exp ']'                                        { SubscriptVar (SimpleVar ($1 :: Symbol)) $3 }
             | lvalue '[' exp ']'                                    { SubscriptVar $1 $3 }
       
 decllist    : decl                                                  { [$1] }
-            | decl ',' decllist                                     { $1 : $3 } 
+            | decl decllist                                         { $1 : $2 } 
          
 decl        : TYPE ID '=' ty                                        { TypeDecl ($2 :: Symbol) $4 }
             | vardecl                                               { $1 }
@@ -169,8 +170,8 @@ parseError _ = error "Parse error"
 
 -- Could include types representing syntax tree nodes,
 -- but we already imported that above from:
--- Tiger.SyntaxAnalysis.Syntax
+-- Tiger.Syntactic.Syntax
 
 -- We also already included the lexical tokens from:
--- Tiger.LexicalAnalysis.Tokens
+-- Tiger.Lexical.Tokens
 }
