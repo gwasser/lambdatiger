@@ -34,7 +34,7 @@ tests = testGroup "All Unit Tests" [tokenizerTests, parserTests, appelTests]
 
 -- these tests are NOT necessarily valid Tiger programs, but only lists
 -- of tokens to check that the lexer does what I expect
-tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerBoolArith, testLexerParens, testLexerNestedComments, testStringLiterals, testStringLiteralsWithEscapes, testLexerSubscriptVar, testLexerLetFuncDec]
+tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerBoolArith, testLexerParens, testLexerNestedComments, testStringLiterals, testStringLiteralsWithEscapes, testMultilineString, testLexerSubscriptVar, testLexerLetFuncDec]
 
 testLexerARRAY =
   testCase "accepts input 'array' as ARRAY" $ assertEqual [] ([ARRAY]) (alexScanTokens "array")
@@ -66,6 +66,10 @@ testStringLiterals =
     testCase "accepts input 'if \"string\" = \"other\" then x'" $ assertEqual [] ([IF, STR "string", EQUAL, STR "other", THEN, ID "x"]) (alexScanTokens "if \"string\" = \"other\" then x")
 testStringLiteralsWithEscapes =
     testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x'" $ assertEqual [] ([IF, STR "abc\n", EQUAL, STR "lmn\t", THEN, ID "x"]) (alexScanTokens "if \"abc\n\" = \"lmn\t\" then x")
+testMultilineString =
+    testCase "accepts multiline string as input" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z"]) (alexScanTokens "if x \
+                                    \then y \
+                                    \else z")
 testLexerSubscriptVar =
   testCase "accepts input 'list[0]'" $ assertEqual [] ([ID "list", LBRACKET, NUM 0, RBRACKET]) (alexScanTokens "list[0]")
 testLexerLetFuncDec =
@@ -112,8 +116,41 @@ testParserLetFuncDecl =
                              
 -- these tests are based on the ones written by Appel in sample ML code,
 -- and distributed via the textbook website
-appelTests = testGroup "Appel's original tests for Tiger" [testAppel12]
+appelTests = testGroup "Appel's original tests for Tiger" [testAppel1, testAppel2, testAppel3, testAppel4, testAppel5, testAppel12]
 
+testAppel1 =
+    testCase "parses test1" $ assertEqual [] (Program $ LetExp [TypeDecl "arrtype" (ArrayType "int"), VarDecl "arr1" True (Just "arrtype") (ArrayExp "arrtype" (IntExp 10) (IntExp 0))] (VarExp $ SimpleVar "arr1")) (happyTokenParse $ alexScanTokens "let type arrtype = array of int var arr1:arrtype := arrtype [10] of 0 in arr1 end")
+testAppel2 =
+    testCase "parses test2" $ assertEqual [] (Program $ LetExp [TypeDecl "myint" (NameType "int"), TypeDecl "arrtype" (ArrayType "myint"), VarDecl "arr1" True (Just "arrtype") (ArrayExp "arrtype" (IntExp 10) (IntExp 0))] (VarExp $ SimpleVar "arr1")) (happyTokenParse $ alexScanTokens "let type myint = int type  arrtype = array of myint var arr1:arrtype := arrtype [10] of 0 in arr1 end")
+testAppel3 =
+    testCase "parses test3" $ assertEqual [] (Program $ LetExp [TypeDecl "rectype" (RecordType [Field "name" True "string", Field "age" True "int"]), VarDecl "rec1" True (Just "rectype") (RecordExp [("age", IntExp 1000), ("name", StrExp "Nobody")] ("rectype"))] (SeqExp [AssignExp (FieldVar (SimpleVar "rec1") "name") (StrExp "Somebody"), VarExp $ SimpleVar "rec1"])) (happyTokenParse $ alexScanTokens "let \
+	\type  rectype = {name:string, age:int} \
+	\var rec1:rectype := rectype {name=\"Nobody\", age=1000} \
+\in \
+	\rec1.name := \"Somebody\"; \
+	\rec1 \
+\end")
+testAppel4 =
+    testCase "parses test4" $ assertEqual [] (Program (LetExp {decls = [FunDecls [FunDecl {fundeclname = "nfactor", params = [Field {fieldname = "n", escape = True, typ = "int"}], result = Just "int", body = IfExp {iftest = OpExp {left = VarExp (SimpleVar "n"), oper = Equal, right = IntExp 0}, thenexp = IntExp 1, elseexp = Just (OpExp {left = VarExp (SimpleVar "n"), oper = Mul, right = CallExp {func = "nfactor", args = [OpExp {left = VarExp (SimpleVar "n"), oper = Sub, right = IntExp 1}]}})}}]], lbody = CallExp {func = "nfactor", args = [IntExp 10]}})) (happyTokenParse $ alexScanTokens "let \
+\/* calculate n! */ \
+\function nfactor(n: int): int = \
+	\if  n = 0 \
+        \then 1 \
+        \else n * nfactor(n-1) \
+\in \
+	\nfactor(10) \
+\end")
+testAppel5 =
+    testCase "parses test5" $ assertEqual [] (Program (LetExp {decls = [TypeDecl {tname = "intlist", ttyp = RecordType [Field {fieldname = "hd", escape = True, typ = "int"},Field {fieldname = "tl", escape = True, typ = "intlist"}]}, TypeDecl {tname = "tree", ttyp = RecordType [Field {fieldname = "key", escape = True, typ = "int"},Field {fieldname = "children", escape = True, typ = "treelist"}]},TypeDecl {tname = "treelist", ttyp = RecordType [Field {fieldname = "hd", escape = True, typ = "tree"},Field {fieldname = "tl", escape = True, typ = "treelist"}]},VarDecl {vname = "lis", vescape = True, vtyp = Just "intlist", vinit = RecordExp {fields = [("tl",NilExp),("hd",IntExp 0)], rtyp = "intlist"}}], lbody = VarExp (SimpleVar "lis")})) (happyTokenParse $ alexScanTokens "let \
+\/* define a list */ \
+\type intlist = {hd: int, tl: intlist} \ 
+\/* define a tree */ \
+\type tree ={key: int, children: treelist} \
+\type treelist = {hd: tree, tl: treelist} \
+\var lis:intlist := intlist { hd=0, tl= nil } \ 
+\in \
+	\lis \
+\end")
 testAppel12 =
   testCase "parses test12" $ assertEqual [] (Program $ LetExp [VarDecl "a" True Nothing (IntExp 0)] (ForExp "i" True (IntExp 0) (IntExp 100) (SeqExp [AssignExp (SimpleVar "a") (OpExp (VarExp $ SimpleVar "a") Add (IntExp 1)), SeqExp []]))) (happyTokenParse $ alexScanTokens "/* valid for and let */ let var a:= 0 in for i:=0 to 100 do (a:=a+1;()) end")
                                                                                                                                                                                                                                                         
