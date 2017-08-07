@@ -29,6 +29,7 @@ import Tiger.Syntactic.AST
 %tokentype { Token }
 %error { parseError }
 
+%nonassoc DO ASSIGN
 %right IN OF ELSE
 %left '|'
 %left '&'
@@ -95,48 +96,50 @@ exp         : NIL                                                   { NilExp }
             | lvalue                                                { VarExp $1 }
             | NUM                                                   { IntExp $1 }
             | STR                                                   { StrExp $1 }
-            | ID '(' ')'                                            { CallExp ($1 :: Symbol) [] }
-            | ID '(' explist ')'                                    { CallExp ($1 :: Symbol) $3 }
-            | exp '|' exp                                           { IfExp $1 (IntExp 1) (Just $3) }
-            | exp '&' exp                                           { IfExp $1 $3 (Just (IntExp 0)) }
-            | exp '+' exp                                           { OpExp $1 Add $3 }
-            | exp '-' exp                                           { OpExp $1 Sub $3 }
+            | '(' expseq ')'                                        { if length($2) == 1 then head $2 else SeqExp (reverse $2) }
+            | '-' exp %prec NEG                                     { OpExp (IntExp 0) Sub $2 }
+            | ID '(' arglist ')'                                    { CallExp ($1 :: Symbol) (reverse $3) }
             | exp '*' exp                                           { OpExp $1 Mul $3 }
             | exp '/' exp                                           { OpExp $1 Div $3 }
-            | '-' exp %prec NEG                                     { OpExp (IntExp 0) Sub $2 }
+            | exp '+' exp                                           { OpExp $1 Add $3 }
+            | exp '-' exp                                           { OpExp $1 Sub $3 }
             | exp '=' exp                                           { OpExp $1 Equal $3 }
             | exp '<>' exp                                          { OpExp $1 NotEqual $3 }
             | exp '>' exp                                           { OpExp $1 GreaterThan $3 }
             | exp '<' exp                                           { OpExp $1 LessThan $3 }
             | exp '>=' exp                                          { OpExp $1 GreaterEqual $3 }
             | exp '<=' exp                                          { OpExp $1 LessEqual $3 }
-            | ID '{' '}'                                            { RecordExp [] ($1 :: Symbol) }
+            | exp '&' exp                                           { IfExp $1 $3 (Just (IntExp 0)) }
+            | exp '|' exp                                           { IfExp $1 (IntExp 1) (Just $3) }
             | ID '{' recflist '}'                                   { RecordExp $3 ($1 :: Symbol) }
-            | exp ';' exp                                           { SeqExp ($1 : [$3]) }
             | lvalue ':=' exp                                       { AssignExp $1 $3 }
             | IF exp THEN exp ELSE exp                              { IfExp $2 $4 (Just $6) }
             | IF exp THEN exp                                       { IfExp $2 $4 Nothing }
             | WHILE exp DO exp                                      { WhileExp $2 $4 }
             | FOR ID ':=' exp TO exp DO exp                         { ForExp ($2 :: Symbol) True $4 $6 $8 }
             | BREAK                                                 { BreakExp }
-            | LET decllist IN exp END                               { LetExp $2 $4 }
+            | LET decllist IN expseq END                            { LetExp (reverse $2) (if length($4) == 1 then head $4 else SeqExp (reverse $4)) }
             | ID '[' exp ']' OF exp                                 { ArrayExp ($1 :: Symbol)$3 $6 }
-            | '(' exp ')'                                           { $2 }
             
-explist     : exp                                                   { [$1] }
-            | exp ',' explist                                       { $1 : $3 } 
+expseq      : {- empty -}                                           { [] }
+            | expseq ';' exp                                        { $3 : $1 } 
+            | exp                                                   { [$1] }
+            
+arglist     : {- empty -}                                           { [] }
+            | arglist ',' exp                                       { $3 : $1 } 
+            | exp                                                   { [$1] }
             
 lvalue      : ID                                                    { SimpleVar ($1 :: Symbol) }
             | lvalue '.' ID                                         { FieldVar $1 ($3 :: Symbol) }
             | ID '[' exp ']'                                        { SubscriptVar (SimpleVar ($1 :: Symbol)) $3 }
             | lvalue '[' exp ']'                                    { SubscriptVar $1 $3 }
       
-decllist    : decl                                                  { [$1] }
-            | decl decllist                                         { $1 : $2 } 
+decllist    : {- empty -}                                           { [] }
+            | decllist decl                                         { $2 : $1 } 
          
 decl        : TYPE ID '=' ty                                        { TypeDecl ($2 :: Symbol) $4 }
             | vardecl                                               { $1 }
-            | fundecllist                                           { FunDecls $1 }
+            | fundecllist                                           { FunDecls (reverse $1) }
 
 ty          : ID                                                    { NameType ($1 :: Symbol) }
             | '{' '}'                                               { RecordType [] }
@@ -144,7 +147,8 @@ ty          : ID                                                    { NameType (
             | ARRAY OF ID                                           { ArrayType ($3 :: Symbol) }
             
 recflist    : recfield                                              { [$1] }
-            | recfield ',' recflist                                 { $1 : $3 }
+            | recflist ',' recfield                                 { $3 : $1 }
+            | {- empty -}                                           { [] }
             
 recfield    : ID '=' exp                                            { ($1 :: Symbol,$3) }
    
@@ -156,8 +160,8 @@ field       : ID ':' ID                                             { Field ($1 
 vardecl     : VAR ID ':=' exp                                       { VarDecl ($2 :: Symbol) True Nothing $4 }
             | VAR ID ':' ID ':=' exp                                { VarDecl ($2 :: Symbol) True (Just ($4 :: Symbol)) $6 }
             
-fundecllist : fundecl                                               { [$1] }
-            | fundecl ',' fundecllist                               { $1 : $3 } 
+fundecllist : {- empty -}                                           { [] }
+            | fundecllist fundecl                                   { $2 : $1 } 
         
 fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDecl ($2 :: Symbol) [] Nothing $6 }
             | FUNCTION ID '(' fieldlist ')' '=' exp                 { FunDecl ($2 :: Symbol) $4 Nothing $7 }
