@@ -112,12 +112,12 @@ monadicLexer cont = readToken >>= cont
   
 --scanner :: String -> Token
 -- evalLex str $ readToken = evalState m (initialState s)
-scanner str = tokenList str
-  where tokenList s = do
-                 let nextTok = runState (readToken) (initialState s)
+scanner str = tokenList (initialState str)
+  where tokenList lexst = do
+                 let nextTok = runState (readToken) lexst
                  case fst $ nextTok of
                          TEOF -> [TEOF]
-                         t -> t : tokenList (airest $ input $ snd nextTok)
+                         t -> t : tokenList (snd nextTok)
         
   
 --
