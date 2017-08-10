@@ -27,7 +27,7 @@ module Tiger.Lexical.Tokens where
 -- of the Tiger language, as well as special End of File (EOF) token.
 -- Data type tokens have an additional constructor argument
 -- representing the value of the token.
-data Token = EOF 
+data Token = TEOF
            -- keywords
            | ARRAY 
            | BREAK 

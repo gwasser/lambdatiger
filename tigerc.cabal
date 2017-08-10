@@ -1,5 +1,5 @@
 name:                tigerc
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            An experimental compiler for Tiger language
 description:         Please see README.md
 homepage:            https://gitlab.com/gwasser/tigerc#readme
@@ -20,12 +20,11 @@ library
                        Tiger.Syntactic.AST,
                        Tiger.Syntactic.Parser
   build-depends:       base,
+                       utf8-string,
                        array,
                        containers,
-                       parsec,
                        transformers,
-                       mtl,
-                       pretty
+                       mtl
   build-tools:         alex,
                        happy
   default-language:    Haskell2010

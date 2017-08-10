@@ -39,6 +39,8 @@ import Tiger.Syntactic.AST
 %left NEG
 
 %token 
+      EOF             { TEOF }
+
       ARRAY           { ARRAY }
       BREAK           { BREAK }
       DO              { DO }
@@ -90,7 +92,7 @@ import Tiger.Syntactic.AST
 
 %%
 
-program     : exp                                                   { Program $1 }
+program     : exp EOF                                               { Program $1 }
 
 exp         : NIL                                                   { NilExp }
             | lvalue                                                { VarExp $1 }
