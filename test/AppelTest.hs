@@ -31,7 +31,7 @@ import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), O
                              
 -- these tests are based on the ones written by Appel in sample ML code,
 -- and distributed via the textbook website
-appelTests = testGroup "Appel's original tests for Tiger" [testAppel1, testAppel2, testAppel3, testAppel4, testAppel5, testAppel6, testAppel7, testAppel8, testAppel12]
+appelTests = testGroup "Appel's original tests for Tiger" [testAppel1, testAppel2, testAppel3, testAppel4, testAppel5, testAppel6, testAppel7, testAppel8, testAppel9, testAppel10, testAppel11, testAppel12, testAppel13]
 
 testAppel1 =
     testCase "parses test1 (read from file)" $ (readFile "test/appeltestcases/test1.tig" >>= (assertEqual [] (Program $ LetExp [TypeDecl "arrtype" (ArrayType "int"), VarDecl "arr1" True (Just "arrtype") (ArrayExp "arrtype" (IntExp 10) (IntExp 0))] (VarExp $ SimpleVar "arr1"))) . happyTokenParse . scanner)
@@ -49,9 +49,16 @@ testAppel7 =
     testCase "parses test7 (read from file)" $ (readFile "test/appeltestcases/test7.tig" >>= (assertEqual [] (Program $ (LetExp {decls = [FunDecls [FunDecl {fundeclname = "do_nothing1", params = [Field {fieldname = "a", escape = True, typ = "int"},Field {fieldname = "b", escape = True, typ = "string"}], result = Just "int", body = SeqExp [CallExp {func = "do_nothing2", args = [OpExp {left = VarExp (SimpleVar "a"), oper = Add, right = IntExp 1}]},IntExp 0]},FunDecl {fundeclname = "do_nothing2", params = [Field {fieldname = "d", escape = True, typ = "int"}], result = Just "string", body = SeqExp [CallExp {func = "do_nothing1", args = [VarExp (SimpleVar "d"),StrExp "str"]},StrExp " "]}]], lbody = CallExp {func = "do_nothing1", args = [IntExp 0,StrExp "str2"]}}))) . happyTokenParse . scanner)
 testAppel8 =
     testCase "parses test8 (read from file)" $ (readFile "test/appeltestcases/test8.tig" >>= (assertEqual [] (Program $ IfExp {iftest = OpExp {left = IntExp 10, oper = GreaterThan, right = IntExp 20}, thenexp = IntExp 30, elseexp = Just $ IntExp 40})) . happyTokenParse . scanner)
+testAppel9 =
+    testCase "parses test9 (read from file)" $ (readFile "test/appeltestcases/test9.tig" >>= (assertEqual [] (Program $ IfExp {iftest = OpExp {left = IntExp 5, oper = GreaterThan, right = IntExp 4}, thenexp = IntExp 13, elseexp = Just $ StrExp " "})) . happyTokenParse . scanner)
+testAppel10 =
+    testCase "parses test10 (read from file)" $ (readFile "test/appeltestcases/test10.tig" >>= (assertEqual [] (Program $ WhileExp {wtest = OpExp {left = IntExp 10, oper = GreaterThan, right = IntExp 5}, wbody = OpExp {left = IntExp 5, oper = Add, right = IntExp 6}})) . happyTokenParse . scanner)
+testAppel11 =
+    testCase "parses test11 (read from file)" $ (readFile "test/appeltestcases/test11.tig" >>= (assertEqual [] (Program $ ForExp { fvar = "i", fescape = True, lo = IntExp 10, hi = StrExp " ", fbody = AssignExp { avar = SimpleVar "i", aexp = OpExp {left = VarExp $ SimpleVar "i", oper = Sub, right = IntExp 1} } })) . happyTokenParse . scanner)
 testAppel12 =
     testCase "parses test12 (read from file)" $ (readFile "test/appeltestcases/test12.tig" >>= (assertEqual [] (Program $ LetExp [VarDecl "a" True Nothing (IntExp 0)] (ForExp "i" True (IntExp 0) (IntExp 100) (SeqExp [AssignExp (SimpleVar "a") (OpExp (VarExp $ SimpleVar "a") Add (IntExp 1)), SeqExp []])))) . happyTokenParse . scanner)
-
+testAppel13 =
+    testCase "parses test13 (read from file)" $ (readFile "test/appeltestcases/test13.tig" >>= (assertEqual [] (Program $ OpExp {left = IntExp 3, oper = GreaterThan, right = StrExp "df"})) . happyTokenParse . scanner)
     
 -- testAppel6 =
     --testCase "parses test6 (read from file)" $ (readFile "test/appeltestcases/test6.tig" >>= (assertEqual [] (Program $ NilExp)) . happyTokenParse . scanner)
