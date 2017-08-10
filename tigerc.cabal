@@ -40,7 +40,10 @@ executable tigerc
 test-suite tigerc-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  main-is:             CompilerSpec.hs
+  other-modules:       LexerTest,
+                       ParserTest,
+                       AppelTest
+  main-is:             MainSpec.hs
   build-depends:       base,
                        tasty,
                        tasty-hunit,

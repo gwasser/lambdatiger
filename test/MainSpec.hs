@@ -19,5 +19,15 @@
     along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+module Main where
+
+import Test.Tasty (defaultMain, testGroup, TestTree)
+
+import LexerTest (tokenizerTests)
+import ParserTest (parserTests)
+import AppelTest (appelTests)
+
+main = defaultMain tests
+
+tests :: TestTree
+tests = testGroup "All Unit Tests" [tokenizerTests, parserTests, appelTests]
