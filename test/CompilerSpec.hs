@@ -34,7 +34,7 @@ tests = testGroup "All Unit Tests" [tokenizerTests, parserTests, appelTests]
 
 -- these tests are NOT necessarily valid Tiger programs, but only lists
 -- of tokens to check that the lexer does what I expect
-tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerBoolArith, testLexerParens, testLexerNestedComments, testStringLiterals, testStringLiteralsWithEscapes, testMultilineString, testLexerSubscriptVar, testLexerLetFuncDec]
+tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerBoolArith, testLexerParens, testLexerNestedComments, testLexerMultComments, testLexerNoStringInComments, testLexerNoCommentInStrings, testStringLiterals, testStringLiteralsWithEscapes, testMultilineString, testLexerSubscriptVar, testLexerLetFuncDec]
 
 testLexerARRAY =
   testCase "accepts input 'array' as ARRAY" $ assertEqual [] ([ARRAY, TEOF]) (scanner "array")
@@ -62,6 +62,12 @@ testLexerParens =
   testCase "accepts input '12* (42 - 17)/{5}   +a[1]'" $ assertEqual [] ([NUM 12, STAR, LPAREN, NUM 42, MINUS, NUM 17, RPAREN, SLASH, LBRACE, NUM 5, RBRACE, PLUS, ID "a", LBRACKET, NUM 1, RBRACKET, TEOF]) (scanner "12* (42 - 17)/{5}   +a[1]")
 testLexerNestedComments =
   testCase "accepts input 'x = y /* outer /* inner comment */ outer */ + 42'" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42, TEOF]) (scanner "x = y /* outer /* inner comment */ outer */ + 42")
+testLexerMultComments =
+  testCase "accepts input '/* a */ x = y /* b? */ + /* answer to everything */ 42'" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42, TEOF]) (scanner "/* a */ x = y /* b? */ + /* answer to everything */ 42")
+testLexerNoStringInComments =
+  testCase "accepts input 'x = /* here is \" a string that does not count \" */ 42'" $ assertEqual [] ([ID "x", EQUAL, NUM 42, TEOF]) (scanner "x = /* here is \" a string that does not count \" */ 42")
+testLexerNoCommentInStrings =
+  testCase "accepts input 'x = \" should not /* see a comment */ \"'" $ assertEqual [] ([ID "x", EQUAL, STR " should not /* see a comment */ ", TEOF]) (scanner "x = \" should not /* see a comment */ \"")
 testStringLiterals =
     testCase "accepts input 'if \"string\" = \"other\" then x'" $ assertEqual [] ([IF, STR "string", EQUAL, STR "other", THEN, ID "x", TEOF]) (scanner "if \"string\" = \"other\" then x")
 testStringLiteralsWithEscapes =

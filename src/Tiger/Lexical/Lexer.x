@@ -97,8 +97,8 @@ tokens :-
   
   <0>\"                   { beginString }
   <stringSC>\"            { endString }
-  <stringSC>.             { appendString }
-  <stringSC>\\[nt\"]      { escapeString }
+  <stringSC>\\[nt\"\\]    { escapeString }
+  <stringSC>[.\n]         { appendString }
   
   <0,commentSC>"/*"       { beginComment }
   <commentSC>"*/"         { endComment }
@@ -189,6 +189,7 @@ escapeString _ (_:c:_) = do
           'n' -> '\n'
           't' -> '\t'
           '"' -> '"'
+          '\\' -> '\\'
   s <- get
   put s{stringBuf = unesc:(stringBuf s)}
   return Nothing
@@ -222,7 +223,7 @@ readToken = do
   s <- get
   case alexScan (input s) (lexSC s) of
     AlexEOF -> return TEOF
-    AlexError inp' -> error $ "Lexical error at position " ++ (show $ aipos inp')      
+    AlexError inp' -> error $ "Lexical error at position " ++ (show $ aipos inp') ++ " : <<" ++ (show $ airest inp') ++ ">>"
     AlexSkip inp' _ -> do    
       put s{input = inp'}
       readToken
