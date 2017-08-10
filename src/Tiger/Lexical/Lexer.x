@@ -18,7 +18,7 @@
 --    You should have received a copy of the GNU General Public License
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
-module Tiger.Lexical.Lexer (scanner, monadicLexer) where 
+module Tiger.Lexical.Lexer (alexMonadScanTokens, monadicLexer) where 
 
 -- This implementation is partly based on the work of
 -- Jyotirmoy Bhattacharya, documented in book "Alex and Happy" at
@@ -105,14 +105,13 @@ tokens :-
   <commentSC>[.\n]        ;
 
 {
--- happy expects lexer to be a continuation,
+-- happy in monad mode expects lexer to be a continuation,
 -- for historical reasons
 monadicLexer :: (Token -> Lex a) -> Lex a
 monadicLexer cont = readToken >>= cont
   
---scanner :: String -> Token
--- evalLex str $ readToken = evalState m (initialState s)
-scanner str = tokenList (initialState str)
+alexMonadScanTokens :: String -> [Token]
+alexMonadScanTokens str = tokenList (initialState str)
   where tokenList lexst = do
                  let nextTok = runState (readToken) lexst
                  case fst $ nextTok of
