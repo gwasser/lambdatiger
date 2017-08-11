@@ -31,7 +31,7 @@ import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), O
                              
 -- these tests are based on the ones written by Appel in sample ML code,
 -- and distributed via the textbook website
-appelTests = testGroup "Appel's original tests for Tiger" [testParseAppel1, testParseAppel2, testParseAppel3, testParseAppel4, testParseAppel5, testParseAppel6, testParseAppel7, testParseAppel8, testParseAppel9, testParseAppel10, testParseAppel11, testParseAppel12, testParseAppel13, testParseAppel14, testParseAppel15, testParseAppel16, testParseAppel17]
+appelTests = testGroup "Appel's original tests for Tiger" [testParseAppel1, testParseAppel2, testParseAppel3, testParseAppel4, testParseAppel5, testParseAppel6, testParseAppel7, testParseAppel8, testParseAppel9, testParseAppel10, testParseAppel11, testParseAppel12, testParseAppel13, testParseAppel14, testLexAppel15, testParseAppel15, testParseAppel16, testParseAppel17]
 
 -- TODO: maybe use testCaseSteps in future when do typechecking?
 -- (https://hackage.haskell.org/package/tasty-hunit-0.9.2/docs/Test-Tasty-HUnit.html)
@@ -64,6 +64,8 @@ testParseAppel13 =
     testCase "parses test13 (read from file)" $ (readFile "test/appeltestcases/test13.tig" >>= (assertEqual [] (Program $ OpExp {left = IntExp 3, oper = GreaterThan, right = StrExp "df"})) . happyTokenParse . alexMonadScanTokens)
 testParseAppel14 =
     testCase "parses test14 (read from file)" $ (readFile "test/appeltestcases/test14.tig" >>= (assertEqual [] (Program $ (LetExp {decls = [TypeDecl {tname = "arrtype", ttyp = ArrayType "int"},TypeDecl {tname = "rectype", ttyp = RecordType [Field {fieldname = "name", escape = True, typ = "string"},Field {fieldname = "id", escape = True, typ = "int"}]},VarDecl {vname = "rec", vescape = True, vtyp = Nothing, vinit = RecordExp {fields = [("id",IntExp 0),("name",StrExp "aname")], rtyp = "rectype"}},VarDecl {vname = "arr", vescape = True, vtyp = Nothing, vinit = ArrayExp {atyp = "arrtype", size = IntExp 3, ainit = IntExp 0}}], lbody = IfExp {iftest = OpExp {left = VarExp (SimpleVar "rec"), oper = NotEqual, right = VarExp (SimpleVar "arr")}, thenexp = IntExp 3, elseexp = Just (IntExp 4)}}))) . happyTokenParse . alexMonadScanTokens)
+testLexAppel15 =
+    testCase "lexes test15 (read from file)" $ (readFile "test/appeltestcases/test15.tig" >>= (assertEqual [] ([IF, NUM 20, THEN, NUM 3, TEOF])) . alexMonadScanTokens)
 testParseAppel15 =
     testCase "parses test15 (read from file)" $ (readFile "test/appeltestcases/test15.tig" >>= (assertEqual [] (Program $ IfExp {iftest = IntExp 20, thenexp = IntExp 3, elseexp = Nothing})) . happyTokenParse . alexMonadScanTokens)
 testParseAppel16 =
