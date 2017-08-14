@@ -27,13 +27,11 @@ module Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta) wh
 -- under terms of the GNU GPLv3 license. See:
 -- <https://github.com/jmoy/alexhappy/tree/master/startcode>.
 
-import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
-
 import Control.Monad.State (State, get, put, runState, evalState, execState)
---import Control.Monad.Except
---import Control.Monad
 import Codec.Binary.UTF8.String (encode)
 import Data.Word (Word8)
+
+import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
 
 -- This code doesn't use a wrapper, since it implements the basic
 -- functions Alex requires directly at a low level
