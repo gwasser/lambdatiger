@@ -22,6 +22,12 @@
 
 module Tiger.Lexical.Tokens where
 
+-- |A LexicalToken consists of a Token along with appropriate meta data.
+type LexicalToken = (Token, TokenMeta)
+
+-- |TokenMeta currently includes row/col where token was read from input
+data TokenMeta = TokenMeta { row :: Int, col :: Int } deriving (Eq, Show)
+
 -- |A Token of the Tiger language as read by the lexer.
 -- Tokens consist of all keywords, punctuation, and data types
 -- of the Tiger language, as well as special End of File (EOF) token.

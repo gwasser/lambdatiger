@@ -27,7 +27,7 @@ module Tiger.Lexical.Lexer (alexMonadScanTokens, monadicLexer) where
 -- under terms of the GNU GPLv3 license. See:
 -- <https://github.com/jmoy/alexhappy/tree/master/startcode>.
 
-import Tiger.Lexical.Tokens (Token(..))
+import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
 
 import Control.Monad.State (State, get, put, runState, evalState, execState)
 --import Control.Monad.Except
@@ -105,8 +105,10 @@ tokens :-
   <commentSC>[.\n]        ;
 
 {
--- happy in monad mode expects lexer to be a continuation,
--- for historical reasons
+-- happy in monad mode expects to provide lexer with a 
+-- continuation for historical reasons.
+-- Unneeded unless using monadic lexer mode.
+-- See <https://www.haskell.org/happy/doc/html/sec-monads.html>.
 monadicLexer :: (Token -> Lex a) -> Lex a
 monadicLexer cont = readToken >>= cont
   
@@ -126,7 +128,9 @@ alexMonadScanTokens str = tokenList (initialState str)
 -- actions (functions in braces above) have following type;
 -- according to manual, alex doesn't care what the type of
 -- these functions are, as long as they are consistently defined.
-type LexAction = Int -> String -> Lex (Maybe Token)
+type LexAction = Int -- the state of the lexer (starts at 0)
+               -> String -- processed input
+               -> Lex (Maybe Token)
 -- NOTE: because of currying, this effectively adds two more
 -- parameters to any function that yields a LexAction,
 -- as seen in many of the functions below.
@@ -145,7 +149,7 @@ initialState :: String -> LexerState
 initialState s = LexerState {   input = AlexInput {aiprev='\n',
                                                    aibytes=[],
                                                    airest=s,
-                                                   aipos = (1,1)},
+                                                   aipos = TokenMeta {row=1,col=1}},
                                 lexSC = 0,
                                 commentDepth = 0,
                                 stringBuf = ""
@@ -238,12 +242,12 @@ readToken = do
 getLineNo :: Lex Int
 getLineNo = do
   s <- get
-  return . fst . aipos . input $ s
+  return . row . aipos . input $ s
   
 getColNo :: Lex Int
 getColNo = do
   s <- get
-  return . snd . aipos . input $ s
+  return . col . aipos . input $ s
 
 -- take input and a Lex Token, return a Token
 evalLex :: String -> Lex a -> a
@@ -260,7 +264,7 @@ data AlexInput = AlexInput {
     aiprev::Char,
     aibytes::[Word8],
     airest::String,
-    aipos::(Int,Int)} -- (row, col) of position of lexer
+    aipos::TokenMeta} -- (row, col) of position of lexer
     deriving Show
 
 alexGetByte :: AlexInput -> Maybe (Word8, AlexInput)
@@ -269,8 +273,11 @@ alexGetByte ai
     (b:bs) -> Just (b, ai{aibytes=bs})
     [] -> case (airest ai) of
       [] -> Nothing
-      (c:cs) -> let (m,n) = (aipos ai)
-                    newpos = if c=='\n' then (m+1,0) else (m,n+1)
+      (c:cs) -> let m = row $ aipos ai
+                    n = col $ aipos ai
+                    newpos = if c=='\n'
+                             then TokenMeta {row=m+1,col=0}
+                             else TokenMeta {row=m, col=n+1}
                     (b:bs) = encode [c] in
                 Just (b,AlexInput {aiprev=c,
                                    aibytes=bs,
