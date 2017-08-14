@@ -18,7 +18,7 @@
 --    You should have received a copy of the GNU General Public License
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
-module Tiger.Lexical.Lexer (alexMonadScanTokens, monadicLexer) where 
+module Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta) where 
 
 -- This implementation is partly based on the work of
 -- Jyotirmoy Bhattacharya, documented in book "Alex and Happy" at
@@ -109,15 +109,20 @@ tokens :-
 -- continuation for historical reasons.
 -- Unneeded unless using monadic lexer mode.
 -- See <https://www.haskell.org/happy/doc/html/sec-monads.html>.
-monadicLexer :: (Token -> Lex a) -> Lex a
-monadicLexer cont = readToken >>= cont
-  
+--monadicLexer :: (LexicalToken -> Lex a) -> Lex a
+--monadicLexer cont = readToken >>= cont
+
+-- |Strip away metadata from the lexer output, useful for
+-- simple unit testing that doesn't need the meta.
 alexMonadScanTokens :: String -> [Token]
-alexMonadScanTokens str = tokenList (initialState str)
+alexMonadScanTokens str = map (fst) $ alexMonadScanTokensWithMeta str
+  
+alexMonadScanTokensWithMeta :: String -> [LexicalToken]
+alexMonadScanTokensWithMeta str = tokenList (initialState str)
   where tokenList lexst = do
                  let nextTok = runState (readToken) lexst
                  case fst $ nextTok of
-                         TEOF -> [TEOF]
+                         (TEOF, _) -> [(TEOF, Nothing)]
                          t -> t : tokenList (snd nextTok)
         
   
@@ -146,7 +151,7 @@ data LexerState =
 
 -- Generate initial lexer state from an input String
 initialState :: String -> LexerState
-initialState s = LexerState {   input = AlexInput {aiprev='\n',
+initialState s = LexerState {   input = AlexInput {aiprev='\0',
                                                    aibytes=[],
                                                    airest=s,
                                                    aipos = TokenMeta {row=1,col=1}},
@@ -221,33 +226,22 @@ endComment _ _ = do
   return Nothing
 
 
-readToken :: Lex Token
+readToken :: Lex LexicalToken
 readToken = do
   s <- get
   case alexScan (input s) (lexSC s) of
-    AlexEOF -> return TEOF
+    AlexEOF -> return (TEOF, Nothing)
     AlexError inp' -> error $ "Lexical error at position " ++ (show $ aipos inp') ++ " : <<" ++ (show $ airest inp') ++ ">>"
     AlexSkip inp' _ -> do    
       put s{input = inp'}
       readToken
     AlexToken inp' n act -> do 
-      let (AlexInput{airest=buf}) = input s
+      let (AlexInput{airest=buf, aipos=pos}) = input s
       put s{input = inp'}
       res <- act n (take n buf)
       case res of
         Nothing -> readToken
-        Just t -> return t
-
-
-getLineNo :: Lex Int
-getLineNo = do
-  s <- get
-  return . row . aipos . input $ s
-  
-getColNo :: Lex Int
-getColNo = do
-  s <- get
-  return . col . aipos . input $ s
+        Just t -> return (t, Just pos)
 
 -- take input and a Lex Token, return a Token
 evalLex :: String -> Lex a -> a
@@ -275,8 +269,8 @@ alexGetByte ai
       [] -> Nothing
       (c:cs) -> let m = row $ aipos ai
                     n = col $ aipos ai
-                    newpos = if c=='\n'
-                             then TokenMeta {row=m+1,col=0}
+                    newpos = if ((aiprev ai)=='\n')
+                             then TokenMeta {row=m+1,col=1}
                              else TokenMeta {row=m, col=n+1}
                     (b:bs) = encode [c] in
                 Just (b,AlexInput {aiprev=c,

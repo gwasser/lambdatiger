@@ -23,7 +23,8 @@
 module Tiger.Lexical.Tokens where
 
 -- |A LexicalToken consists of a Token along with appropriate meta data.
-type LexicalToken = (Token, TokenMeta)
+-- |If no metadata (such as end of file reached), then meta is Nothing.
+type LexicalToken = (Token, Maybe TokenMeta)
 
 -- |TokenMeta currently includes row/col where token was read from input
 data TokenMeta = TokenMeta { row :: Int, col :: Int } deriving (Eq, Show)
@@ -60,7 +61,7 @@ data Token = TEOF
            | EQUAL 
            | GREATERTHAN 
            | GREATEROREQUAL 
-           | LESSTHAN 
+           | LESSTHAN
            | LESSOREQUAL 
            | MINUS 
            | NOTEQUAL  -- <>

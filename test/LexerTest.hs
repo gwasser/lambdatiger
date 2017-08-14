@@ -24,14 +24,14 @@ module LexerTest where
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexical.Lexer (alexMonadScanTokens)
-import Tiger.Lexical.Tokens (Token(..))
+import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta)
+import Tiger.Lexical.Tokens (Token(..), LexicalToken(..), TokenMeta(..))
 import Tiger.Syntactic.Parser (happyTokenParse)
 import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
 
 -- these tests are NOT necessarily valid Tiger programs, but only lists
 -- of tokens to check that the lexer does what I expect
-tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerBoolArith, testLexerParens, testLexerNestedComments, testLexerMultComments, testLexerNoStringInComments, testLexerNoCommentInStrings, testStringLiterals, testStringLiteralsWithEscapes, testMultilineString, testLexerSubscriptVar, testLexerLetFuncDec]
+tokenizerTests = testGroup "Alex-based Tiger lexer" [testLexerARRAY, testLexerArraysID, testLexerArraID, testLexerNIL, testLexerIfThenElse, testLexerIfThenIfThenElse, testLexerWhileDo, testLexerIgnoreComments, testLexerProperForLoop, testLexerArith, testLexerArithWithMeta, testLexerBoolArith, testLexerParens, testLexerNestedComments, testLexerMultComments, testLexerNoStringInComments, testLexerNoCommentInStrings, testStringLiterals, testStringLiteralsWithEscapes, testStringLiteralsWithEscapesWithMeta, testMultilineString, testLexerSubscriptVar, testLexerLetFuncDec]
 
 testLexerARRAY =
   testCase "accepts input 'array' as ARRAY" $ assertEqual [] ([ARRAY, TEOF]) (alexMonadScanTokens "array")
@@ -53,6 +53,8 @@ testLexerProperForLoop =
   testCase "accepts input 'for t0 := 0 to 10 do someFunc()'" $ assertEqual [] ([FOR, ID "t0", DEFINE, NUM 0, TO, NUM 10, DO, ID "someFunc", LPAREN, RPAREN, TEOF]) (alexMonadScanTokens "for t0 := 0 to 10 do someFunc()")
 testLexerArith =
   testCase "accepts input 'x = y + 42'" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42, TEOF]) (alexMonadScanTokens "x = y + 42")
+testLexerArithWithMeta =
+    testCase "accepts input 'x2 = y23 + 42' with meta" $ assertEqual [] ([(ID "x2", Just $ TokenMeta {row=1, col=1}), (EQUAL, Just $ TokenMeta {row=1, col=4}), (ID "y23", Just $ TokenMeta {row=1, col=6}), (PLUS, Just $ TokenMeta {row=1, col=10}), (NUM 42, Just $ TokenMeta {row=1, col=12}), (TEOF, Nothing)]) (alexMonadScanTokensWithMeta "x2 = y23 + 42")
 testLexerBoolArith =
   testCase "accepts input 'b := a | b & c;'" $ assertEqual [] ([ID "b", DEFINE, ID "a", PIPE, ID "b", AMPERSAND, ID "c", SEMICOLON, TEOF]) (alexMonadScanTokens "b := a | b & c;")
 testLexerParens =
@@ -69,6 +71,8 @@ testStringLiterals =
     testCase "accepts input 'if \"string\" = \"other\" then x'" $ assertEqual [] ([IF, STR "string", EQUAL, STR "other", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"string\" = \"other\" then x")
 testStringLiteralsWithEscapes =
     testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x'" $ assertEqual [] ([IF, STR "abc\n", EQUAL, STR "lmn\t", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"abc\n\" = \"lmn\t\" then x")
+testStringLiteralsWithEscapesWithMeta =
+    testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x' with meta" $ assertEqual [] ([(IF, Just $ TokenMeta {row=1, col=1}), (STR "abc\n", Just $ TokenMeta {row=1, col=9}), (EQUAL, Just $ TokenMeta {row=2, col=2}), (STR "lmn\t", Just $ TokenMeta {row=2, col=9}), (THEN, Just $ TokenMeta {row=2, col=11}), (ID "x", Just $ TokenMeta {row=2, col=16}), (TEOF, Nothing)]) (alexMonadScanTokensWithMeta "if \"abc\n\" = \"lmn\t\" then x")
 testMultilineString =
     testCase "accepts multiline string as input" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z", TEOF]) (alexMonadScanTokens "if x \
                                     \then y \
