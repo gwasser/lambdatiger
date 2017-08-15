@@ -19,14 +19,18 @@
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
 -- exports happyTokenParse :: [Token] -> Program
-module Tiger.Syntactic.Parser (happyTokenParse) where 
-import Tiger.Lexical.Tokens (Token(..))
+--     and happyTokenParseWithMeta :: [LexicalToken] -> Program
+module Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithMeta) where 
+
+import Control.Monad.Except
+
+import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
 import Tiger.Syntactic.AST
 }
 
 
-%name happyTokenParse
-%tokentype { Token }
+%name happyTokenParseWithMeta
+%tokentype { LexicalToken }
 %error { parseError }
 
 %nonassoc DO ASSIGN
@@ -171,7 +175,12 @@ fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDecl ($
             | FUNCTION ID '(' fieldlist ')' ':' ID '=' exp          { FunDecl ($2 :: Symbol) $4 (Just ($7 :: Symbol)) $9 }
      
 {
-parseError :: [Token] -> a
+
+-- |Convenience function used in testing, ignores metadata
+happyTokenParse :: [Token] -> Program
+happyTokenParse ts = happyTokenParseWithMeta $ map (\t -> (t,Nothing)) ts
+
+parseError :: [LexicalToken] -> a
 parseError _ = error "Parse error"
 
 -- Could include types representing syntax tree nodes,
