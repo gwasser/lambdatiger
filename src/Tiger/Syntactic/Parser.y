@@ -20,7 +20,7 @@
 
 -- exports happyTokenParse :: [Token] -> Program
 --     and happyTokenParseWithMeta :: [LexicalToken] -> Program
-module Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithMeta) where 
+module Tiger.Syntactic.Parser (happyTokenParse) where 
 
 import Control.Monad.Except
 
@@ -29,8 +29,8 @@ import Tiger.Syntactic.AST
 }
 
 
-%name happyTokenParseWithMeta
-%tokentype { LexicalToken }
+%name happyTokenParse
+%tokentype { Token }
 %error { parseError }
 
 %nonassoc DO ASSIGN
@@ -177,10 +177,10 @@ fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDecl ($
 {
 
 -- |Convenience function used in testing, ignores metadata
-happyTokenParse :: [Token] -> Program
-happyTokenParse ts = happyTokenParseWithMeta $ map (\t -> (t,Nothing)) ts
+--happyTokenParse :: [Token] -> Program
+--happyTokenParse ts = happyTokenParseWithMeta $ map (\t -> (t,Nothing)) ts
 
-parseError :: [LexicalToken] -> a
+parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
 -- Could include types representing syntax tree nodes,

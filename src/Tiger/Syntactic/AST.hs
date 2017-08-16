@@ -21,6 +21,8 @@
 
 module Tiger.Syntactic.AST where
 
+import Tiger.Lexical.Tokens (TokenMeta(..))
+
 -- a Tiger program is simply an expression
 data Program = Program Exp
                 deriving (Show, Eq)

@@ -26,7 +26,7 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 
 import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta)
 import Tiger.Lexical.Tokens (Token(..))
-import Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithMeta)
+import Tiger.Syntactic.Parser (happyTokenParse)
 import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
 
 
