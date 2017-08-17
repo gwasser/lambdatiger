@@ -23,10 +23,6 @@ module Tiger.Syntactic.AST where
 
 import Tiger.Lexical.Tokens (AlexPosn(..))
 
--- |Representing abstract syntax tree (AST) with position information
--- from the lexer. In most cases used as AST Program type.
-data AST a = AST { getAstPos :: Maybe AlexPosn, unAstPos :: a } deriving (Eq, Show)
-
 -- a Tiger program is simply an expression
 data Program = Program Exp
                 deriving (Show, Eq)
@@ -37,36 +33,36 @@ data Exp
       = NilExp
       | VarExp Var
       | IntExp Int
-      | StrExp String
-      | CallExp { func :: Symbol, args :: [Exp] }
-      | OpExp { left :: Exp, oper :: Op, right :: Exp }
-      | RecordExp { fields :: [(Symbol,Exp)], rtyp :: Symbol }
-      | SeqExp [Exp]
-      | AssignExp { avar :: Var, aexp :: Exp }
-      | IfExp { iftest :: Exp, thenexp :: Exp, elseexp :: Maybe Exp }
-      | WhileExp { wtest :: Exp, wbody :: Exp }
-      | ForExp { fvar :: Symbol, fescape :: Bool, lo :: Exp, hi :: Exp, fbody :: Exp }
-      | BreakExp
-      | LetExp { decls :: [Decl], lbody :: Exp }
-      | ArrayExp { atyp :: Symbol, size :: Exp, ainit :: Exp }
+      | StrExp String AlexPosn
+      | CallExp { func :: Symbol, args :: [Exp], callposn :: AlexPosn }
+      | OpExp { left :: Exp, oper :: Op, right :: Exp, opposn :: AlexPosn }
+      | RecordExp { fields :: [(Symbol,Exp,AlexPosn)], rtyp :: Symbol, rposn :: AlexPosn }
+      | SeqExp [(Exp,AlexPosn)]
+      | AssignExp { avar :: Var, aexp :: Exp, aPosn :: AlexPosn }
+      | IfExp { iftest :: Exp, thenexp :: Exp, elseexp :: Maybe Exp, ifposn :: AlexPosn }
+      | WhileExp { wtest :: Exp, wbody :: Exp, wPosn :: AlexPosn }
+      | ForExp { fvar :: Symbol, fescape :: Bool, lo :: Exp, hi :: Exp, fbody :: Exp, fposn :: AlexPosn }
+      | BreakExp AlexPosn
+      | LetExp { decls :: [Decl], lbody :: Exp, lposn :: AlexPosn }
+      | ArrayExp { atyp :: Symbol, size :: Exp, ainit :: Exp, aposn :: AlexPosn }
       deriving (Show, Eq)
       
 data Var
-    = SimpleVar Symbol
-    | FieldVar Var Symbol
-    | SubscriptVar Var Exp
+    = SimpleVar Symbol AlexPosn
+    | FieldVar Var Symbol AlexPosn
+    | SubscriptVar Var Exp AlexPosn
     deriving (Show, Eq)
     
 data Decl
     = FunDecls [FunDecl]
-    | VarDecl { vname :: Symbol, vescape :: Bool, vtyp :: Maybe Symbol, vinit :: Exp }
-    | TypeDecl { tname :: Symbol, ttyp :: Type }
+    | VarDecl { vname :: Symbol, vescape :: Bool, vtyp :: Maybe Symbol, vinit :: Exp, vposn :: AlexPosn }
+    | TypeDecl { tname :: Symbol, ttyp :: Type, tposn :: AlexPosn }
     deriving (Show, Eq)
     
 data Type
-    = NameType Symbol
+    = NameType Symbol AlexPosn
     | RecordType [Field]
-    | ArrayType Symbol
+    | ArrayType Symbol AlexPosn
     deriving (Show, Eq)
     
 data Op
@@ -84,6 +80,6 @@ data Op
     
 type Symbol = String
 
-data Field = Field { fieldname :: Symbol, escape :: Bool, typ :: Symbol } deriving (Show, Eq)
+data Field = Field { fieldname :: Symbol, escape :: Bool, typ :: Symbol, fieldposn :: AlexPosn } deriving (Show, Eq)
       
-data FunDecl = FunDecl { fundeclname :: Symbol, params :: [Field], result :: Maybe Symbol, body :: Exp } deriving (Show, Eq)
+data FunDecl = FunDecl { fundeclname :: Symbol, params :: [Field], result :: (Maybe Symbol, AlexPosn), body :: Exp, funposn :: AlexPosn } deriving (Show, Eq)

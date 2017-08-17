@@ -26,7 +26,7 @@ module Tiger.Lexical.Tokens where
 -- |If no metadata (such as end of file reached), then meta is Nothing.
 -- Implemented as a record, as suggested in a StackOverflow thread:
 -- <https://stackoverflow.com/questions/34847211/getting-line-number-information-in-the-semantic-analysis-phase-using-alex-happy>
-data L a = L { getPos :: Maybe AlexPosn, unPos :: a } deriving (Eq, Show)
+data L a = L { getPos :: AlexPosn, unPos :: a } deriving (Eq, Show)
 
 -- |AlexPosn represents the position within the lexical stream for each token.
 data AlexPosn = AlexPosn { absolute :: Int, row :: Int, col :: Int } deriving (Eq, Show)

@@ -24,10 +24,10 @@ module ParserTest where
 import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
-import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta)
+import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithPosn)
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
 import Tiger.Syntactic.Parser (happyTokenParse)
-import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
+import Tiger.Syntactic.AST (N(..), Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
 
 
 -- these tests are NOT necessarily valid Tiger programs, but only syntactically

@@ -18,7 +18,7 @@
 --    You should have received a copy of the GNU General Public License
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
-module Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta) where 
+module Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithPosn) where 
 
 -- This implementation is partly based on the work of
 -- Jyotirmoy Bhattacharya, documented in book "Alex and Happy" at
@@ -113,14 +113,14 @@ tokens :-
 -- |Strip away metadata from the lexer output, useful for
 -- simple unit testing that doesn't need the meta.
 alexMonadScanTokens :: String -> [Token]
-alexMonadScanTokens str = map (unPos) $ alexMonadScanTokensWithMeta str
+alexMonadScanTokens str = map (unPos) $ alexMonadScanTokensWithPosn str
   
-alexMonadScanTokensWithMeta :: String -> [L Token]
-alexMonadScanTokensWithMeta str = tokenList (initialState str)
+alexMonadScanTokensWithPosn :: String -> [L Token]
+alexMonadScanTokensWithPosn str = tokenList (initialState str)
   where tokenList lexst = do
                  let nextTok = runState (readToken) lexst
                  case fst $ nextTok of
-                         L {getPos=_, unPos=TEOF} -> [L {getPos=Nothing, unPos=TEOF}]
+                         L {getPos=pos, unPos=TEOF} -> [L {getPos=pos, unPos=TEOF}]
                          t -> t : tokenList (snd nextTok)
         
   
@@ -228,7 +228,9 @@ readToken :: Lex (L Token)
 readToken = do
   s <- get
   case alexScan (input s) (lexSC s) of
-    AlexEOF -> return L {getPos=Nothing, unPos=TEOF}
+    AlexEOF -> do
+      let (AlexInput{aipos=pos}) = input s
+      return L {getPos=pos, unPos=TEOF}
     AlexError inp' -> error $ "Lexical error at position " ++ (show $ aipos inp') ++ " : <<" ++ (show $ airest inp') ++ ">>"
     AlexSkip inp' _ -> do    
       put s{input = inp'}
@@ -239,7 +241,7 @@ readToken = do
       res <- act n (take n buf)
       case res of
         Nothing -> readToken
-        Just t -> return L {getPos=Just pos, unPos=t}
+        Just t -> return L {getPos=pos, unPos=t}
 
 -- take input and a Lex Token, return a Token
 evalLex :: String -> Lex (L a) -> (L a)
