@@ -19,18 +19,18 @@
 --    along with tigerc.  If not, see <http://www.gnu.org/licenses/>.
 
 -- exports happyTokenParse :: [Token] -> Program
---     and happyTokenParseWithMeta :: [LexicalToken] -> Program
-module Tiger.Syntactic.Parser (happyTokenParse) where 
+--     and happyTokenParseWithPosn :: [L Token] -> Program
+module Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithPosn) where 
 
 import Control.Monad.Except
 
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
-import Tiger.Syntactic.AST
+import Tiger.Syntactic.AST (AST(..), Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Field(..), FunDecl(..), Symbol)
 }
 
 
-%name happyTokenParse
-%tokentype { Token }
+%name happyTokenParseWithPosn
+%tokentype { L Token }
 %error { parseError }
 
 %nonassoc DO ASSIGN
@@ -43,56 +43,56 @@ import Tiger.Syntactic.AST
 %left NEG
 
 %token 
-      EOF             { TEOF }
+      EOF             { L { getPos=_, unPos=TEOF } }
 
-      ARRAY           { ARRAY }
-      BREAK           { BREAK }
-      DO              { DO }
-      ELSE            { ELSE }
-      END             { END }
-      FOR             { FOR }
-      FUNCTION        { FUNCTION }
-      IF              { IF }
-      IN              { IN }
-      LET             { LET }
-      NIL             { NIL }
-      OF              { OF }
-      TO              { TO }
-      VAR             { VAR }
-      THEN            { THEN }
-      TYPE            { TYPE }
-      WHILE           { WHILE }
+      ARRAY           { L { getPos=_, unPos=ARRAY } }
+      BREAK           { L { getPos=_, unPos=BREAK } }
+      DO              { L { getPos=_, unPos=DO } }
+      ELSE            { L { getPos=_, unPos=ELSE } }
+      END             { L { getPos=_, unPos=END } }
+      FOR             { L { getPos=_, unPos=FOR } }
+      FUNCTION        { L { getPos=_, unPos=FUNCTION } }
+      IF              { L { getPos=_, unPos=IF } }
+      IN              { L { getPos=_, unPos=IN } }
+      LET             { L { getPos=_, unPos=LET } }
+      NIL             { L { getPos=_, unPos=NIL } }
+      OF              { L { getPos=_, unPos=OF } }
+      TO              { L { getPos=_, unPos=TO } }
+      VAR             { L { getPos=_, unPos=VAR } }
+      THEN            { L { getPos=_, unPos=THEN } }
+      TYPE            { L { getPos=_, unPos=TYPE } }
+      WHILE           { L { getPos=_, unPos=WHILE } }
   
-      '+'             { PLUS }
-      '-'             { MINUS }
-      '*'             { STAR }
-      '/'             { SLASH }
-      '&'             { AMPERSAND }
-      '|'             { PIPE }
+      '+'             { L { getPos=_, unPos=PLUS } }
+      '-'             { L { getPos=_, unPos=MINUS } }
+      '*'             { L { getPos=_, unPos=STAR } }
+      '/'             { L { getPos=_, unPos=SLASH } }
+      '&'             { L { getPos=_, unPos=AMPERSAND } }
+      '|'             { L { getPos=_, unPos=PIPE } }
   
-      ':='            { DEFINE }
+      ':='            { L { getPos=_, unPos=DEFINE } }
+
+      '='             { L { getPos=_, unPos=EQUAL } }
+      '<>'            { L { getPos=_, unPos=NOTEQUAL } }
+      '>='            { L { getPos=_, unPos=GREATEROREQUAL } }
+      '<='            { L { getPos=_, unPos=LESSOREQUAL } }
+      '>'             { L { getPos=_, unPos=GREATERTHAN } }
+      '<'             { L { getPos=_, unPos=LESSTHAN } }
   
-      '='             { EQUAL }
-      '<>'            { NOTEQUAL }
-      '>='            { GREATEROREQUAL }
-      '<='            { LESSOREQUAL }
-      '>'             { GREATERTHAN }
-      '<'             { LESSTHAN }
-  
-      ';'             { SEMICOLON }
-      ':'             { COLON }
-      '.'             { PERIOD }
-      ','             { COMMA }
-      '{'             { LBRACE }
-      '}'             { RBRACE }
-      '('             { LPAREN }
-      ')'             { RPAREN }
-      '['             { LBRACKET }
-      ']'             { RBRACKET }
+      ';'             { L { getPos=_, unPos=SEMICOLON } }
+      ':'             { L { getPos=_, unPos=COLON } }
+      '.'             { L { getPos=_, unPos=PERIOD } }
+      ','             { L { getPos=_, unPos=COMMA } }
+      '{'             { L { getPos=_, unPos=LBRACE } }
+      '}'             { L { getPos=_, unPos=RBRACE } }
+      '('             { L { getPos=_, unPos=LPAREN } }
+      ')'             { L { getPos=_, unPos=RPAREN } }
+      '['             { L { getPos=_, unPos=LBRACKET } }
+      ']'             { L { getPos=_, unPos=RBRACKET } }
       
-      NUM             { NUM $$ }
-      ID              { ID $$ }
-      STR             { STR $$ }
+      NUM             { L { getPos=_, unPos=NUM $$ } }
+      ID              { L { getPos=_, unPos=ID $$ } }
+      STR             { L { getPos=_, unPos=STR $$ } }
 
 %%
 
@@ -177,10 +177,10 @@ fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDecl ($
 {
 
 -- |Convenience function used in testing, ignores metadata
---happyTokenParse :: [Token] -> Program
---happyTokenParse ts = happyTokenParseWithMeta $ map (\t -> (t,Nothing)) ts
+happyTokenParse :: [Token] -> Program
+happyTokenParse ts = happyTokenParseWithPosn $ map (\t -> L {getPos=Nothing, unPos=t}) ts
 
-parseError :: [Token] -> a
+parseError :: [L Token] -> a
 parseError _ = error "Parse error"
 
 -- Could include types representing syntax tree nodes,
@@ -189,4 +189,5 @@ parseError _ = error "Parse error"
 
 -- We also already included the lexical tokens from:
 -- Tiger.Lexical.Tokens
+
 }

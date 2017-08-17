@@ -23,6 +23,10 @@ module Tiger.Syntactic.AST where
 
 import Tiger.Lexical.Tokens (AlexPosn(..))
 
+-- |Representing abstract syntax tree (AST) with position information
+-- from the lexer. In most cases used as AST Program type.
+data AST a = AST { getAstPos :: Maybe AlexPosn, unAstPos :: a } deriving (Eq, Show)
+
 -- a Tiger program is simply an expression
 data Program = Program Exp
                 deriving (Show, Eq)
