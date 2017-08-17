@@ -25,7 +25,7 @@ import Test.Tasty (defaultMain, testGroup, TestTree)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
 import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithMeta)
-import Tiger.Lexical.Tokens (Token(..), LexicalToken(..), TokenMeta(..))
+import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
 import Tiger.Syntactic.Parser (happyTokenParse)
 import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
 
@@ -54,7 +54,7 @@ testLexerProperForLoop =
 testLexerArith =
   testCase "accepts input 'x = y + 42'" $ assertEqual [] ([ID "x", EQUAL, ID "y", PLUS, NUM 42, TEOF]) (alexMonadScanTokens "x = y + 42")
 testLexerArithWithMeta =
-    testCase "accepts input 'x2 = y23 + 42' with meta" $ assertEqual [] ([(ID "x2", Just $ TokenMeta {row=1, col=1}), (EQUAL, Just $ TokenMeta {row=1, col=4}), (ID "y23", Just $ TokenMeta {row=1, col=6}), (PLUS, Just $ TokenMeta {row=1, col=10}), (NUM 42, Just $ TokenMeta {row=1, col=12}), (TEOF, Nothing)]) (alexMonadScanTokensWithMeta "x2 = y23 + 42")
+    testCase "accepts input 'x2 = y23 + 42' with meta" $ assertEqual [] ([L {getPos=Just $ AlexPosn {absolute=1, row=1, col=1}, unPos=ID "x2"}, L {getPos=Just $ AlexPosn {absolute=4, row=1, col=4}, unPos=EQUAL}, L {getPos=Just $ AlexPosn {absolute=6, row=1, col=6}, unPos=ID "y23"}, L {getPos=Just $ AlexPosn {absolute=10, row=1, col=10}, unPos=PLUS}, L {getPos=Just $ AlexPosn {absolute=12, row=1, col=12}, unPos=NUM 42}, L {getPos=Nothing, unPos=TEOF}]) (alexMonadScanTokensWithMeta "x2 = y23 + 42")
 testLexerBoolArith =
   testCase "accepts input 'b := a | b & c;'" $ assertEqual [] ([ID "b", DEFINE, ID "a", PIPE, ID "b", AMPERSAND, ID "c", SEMICOLON, TEOF]) (alexMonadScanTokens "b := a | b & c;")
 testLexerParens =
@@ -72,7 +72,7 @@ testStringLiterals =
 testStringLiteralsWithEscapes =
     testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x'" $ assertEqual [] ([IF, STR "abc\n", EQUAL, STR "lmn\t", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"abc\n\" = \"lmn\t\" then x")
 testStringLiteralsWithEscapesWithMeta =
-    testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x' with meta" $ assertEqual [] ([(IF, Just $ TokenMeta {row=1, col=1}), (STR "abc\n", Just $ TokenMeta {row=1, col=9}), (EQUAL, Just $ TokenMeta {row=2, col=2}), (STR "lmn\t", Just $ TokenMeta {row=2, col=9}), (THEN, Just $ TokenMeta {row=2, col=11}), (ID "x", Just $ TokenMeta {row=2, col=16}), (TEOF, Nothing)]) (alexMonadScanTokensWithMeta "if \"abc\n\" = \"lmn\t\" then x")
+    testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x' with meta" $ assertEqual [] ([L {getPos=Just $ AlexPosn {absolute=1, row=1, col=1}, unPos=IF}, L {getPos=Just $ AlexPosn {absolute=9, row=1, col=9}, unPos=STR "abc\n"}, L {getPos=Just $ AlexPosn {absolute=11, row=2, col=2}, unPos=EQUAL}, L {getPos=Just $ AlexPosn {absolute=18, row=2, col=9}, unPos=STR "lmn\t"}, L {getPos=Just $ AlexPosn {absolute=20, row=2, col=11}, unPos=THEN}, L {getPos=Just $ AlexPosn {absolute=25, row=2, col=16}, unPos=ID "x"}, L {getPos=Nothing, unPos=TEOF}]) (alexMonadScanTokensWithMeta "if \"abc\n\" = \"lmn\t\" then x")
 testMultilineString =
     testCase "accepts multiline string as input" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z", TEOF]) (alexMonadScanTokens "if x \
                                     \then y \

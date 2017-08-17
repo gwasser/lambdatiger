@@ -31,7 +31,7 @@ import Control.Monad.State (State, get, put, runState, evalState, execState)
 import Codec.Binary.UTF8.String (encode)
 import Data.Word (Word8)
 
-import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
+import Tiger.Lexical.Tokens (L(..), AlexPosn(..), Token(..))
 
 -- This code doesn't use a wrapper, since it implements the basic
 -- functions Alex requires directly at a low level
@@ -107,20 +107,20 @@ tokens :-
 -- continuation for historical reasons.
 -- Unneeded unless using monadic lexer mode.
 -- See <https://www.haskell.org/happy/doc/html/sec-monads.html>.
---monadicLexer :: (LexicalToken -> Lex a) -> Lex a
+--monadicLexer :: (L Token -> Lex a) -> Lex a
 --monadicLexer cont = readToken >>= cont
 
 -- |Strip away metadata from the lexer output, useful for
 -- simple unit testing that doesn't need the meta.
 alexMonadScanTokens :: String -> [Token]
-alexMonadScanTokens str = map (fst) $ alexMonadScanTokensWithMeta str
+alexMonadScanTokens str = map (unPos) $ alexMonadScanTokensWithMeta str
   
-alexMonadScanTokensWithMeta :: String -> [LexicalToken]
+alexMonadScanTokensWithMeta :: String -> [L Token]
 alexMonadScanTokensWithMeta str = tokenList (initialState str)
   where tokenList lexst = do
                  let nextTok = runState (readToken) lexst
                  case fst $ nextTok of
-                         (TEOF, _) -> [(TEOF, Nothing)]
+                         L {getPos=_, unPos=TEOF} -> [L {getPos=Nothing, unPos=TEOF}]
                          t -> t : tokenList (snd nextTok)
         
   
@@ -152,7 +152,7 @@ initialState :: String -> LexerState
 initialState s = LexerState {   input = AlexInput {aiprev='\0',
                                                    aibytes=[],
                                                    airest=s,
-                                                   aipos = TokenMeta {row=1,col=1}},
+                                                   aipos = AlexPosn {absolute=1,row=1,col=1}},
                                 lexSC = 0,
                                 commentDepth = 0,
                                 stringBuf = ""
@@ -224,11 +224,11 @@ endComment _ _ = do
   return Nothing
 
 
-readToken :: Lex LexicalToken
+readToken :: Lex (L Token)
 readToken = do
   s <- get
   case alexScan (input s) (lexSC s) of
-    AlexEOF -> return (TEOF, Nothing)
+    AlexEOF -> return L {getPos=Nothing, unPos=TEOF}
     AlexError inp' -> error $ "Lexical error at position " ++ (show $ aipos inp') ++ " : <<" ++ (show $ airest inp') ++ ">>"
     AlexSkip inp' _ -> do    
       put s{input = inp'}
@@ -239,10 +239,10 @@ readToken = do
       res <- act n (take n buf)
       case res of
         Nothing -> readToken
-        Just t -> return (t, Just pos)
+        Just t -> return L {getPos=Just pos, unPos=t}
 
 -- take input and a Lex Token, return a Token
-evalLex :: String -> Lex a -> a
+evalLex :: String -> Lex (L a) -> (L a)
 evalLex s m = evalState m (initialState s)
 
 --
@@ -256,7 +256,7 @@ data AlexInput = AlexInput {
     aiprev::Char,
     aibytes::[Word8],
     airest::String,
-    aipos::TokenMeta} -- (row, col) of position of lexer
+    aipos::AlexPosn} -- (abs, row, col) of position of lexer
     deriving Show
 
 alexGetByte :: AlexInput -> Maybe (Word8, AlexInput)
@@ -267,9 +267,10 @@ alexGetByte ai
       [] -> Nothing
       (c:cs) -> let m = row $ aipos ai
                     n = col $ aipos ai
+                    a = absolute $ aipos ai
                     newpos = if ((aiprev ai)=='\n')
-                             then TokenMeta {row=m+1,col=1}
-                             else TokenMeta {row=m, col=n+1}
+                             then AlexPosn {absolute=a+1,row=m+1,col=1}
+                             else AlexPosn {absolute=a+1,row=m,col=n+1}
                     (b:bs) = encode [c] in
                 Just (b,AlexInput {aiprev=c,
                                    aibytes=bs,

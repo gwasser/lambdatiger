@@ -24,10 +24,12 @@ module Tiger.Lexical.Tokens where
 
 -- |A LexicalToken consists of a Token along with appropriate meta data.
 -- |If no metadata (such as end of file reached), then meta is Nothing.
-type LexicalToken = (Token, Maybe TokenMeta)
+-- Implemented as a record, as suggested in a StackOverflow thread:
+-- <https://stackoverflow.com/questions/34847211/getting-line-number-information-in-the-semantic-analysis-phase-using-alex-happy>
+data L a = L { getPos :: Maybe AlexPosn, unPos :: a } deriving (Eq, Show)
 
--- |TokenMeta currently includes row/col where token was read from input
-data TokenMeta = TokenMeta { row :: Int, col :: Int } deriving (Eq, Show)
+-- |AlexPosn represents the position within the lexical stream for each token.
+data AlexPosn = AlexPosn { absolute :: Int, row :: Int, col :: Int } deriving (Eq, Show)
 
 -- |A Token of the Tiger language as read by the lexer.
 -- Tokens consist of all keywords, punctuation, and data types

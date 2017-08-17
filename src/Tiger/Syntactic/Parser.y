@@ -24,7 +24,7 @@ module Tiger.Syntactic.Parser (happyTokenParse) where
 
 import Control.Monad.Except
 
-import Tiger.Lexical.Tokens (Token(..), LexicalToken, TokenMeta(..))
+import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
 import Tiger.Syntactic.AST
 }
 
