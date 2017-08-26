@@ -25,9 +25,9 @@ import Test.Tasty (defaultMain, testGroup, TestTree)
 
 import LexerTest (tokenizerTests)
 import ParserTest (parserTests)
-import AppelTest (appelTests)
+--import AppelTest (appelTests)
 
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "All Unit Tests" [tokenizerTests, parserTests, appelTests]
+tests = testGroup "All Unit Tests" [tokenizerTests, parserTests]
