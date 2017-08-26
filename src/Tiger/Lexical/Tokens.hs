@@ -87,3 +87,12 @@ data Token = TEOF
            | RBRACKET 
            | RPAREN 
            deriving (Eq, Show)
+
+getStr :: Token -> String
+getStr (ID s) = s
+getStr (STR s) = s
+getStr _ = error "Not an ID or STR Token"
+
+getNum :: Token -> Int
+getNum (NUM n) = n
+getNum _ = error "Not a NUM Token"

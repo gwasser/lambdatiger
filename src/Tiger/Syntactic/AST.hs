@@ -36,8 +36,8 @@ data Exp
       | StrExp String AlexPosn
       | CallExp { func :: Symbol, args :: [Exp], callposn :: AlexPosn }
       | OpExp { left :: Exp, oper :: Op, right :: Exp, opposn :: AlexPosn }
-      | RecordExp { fields :: [(Symbol,Exp,AlexPosn)], rtyp :: Symbol, rposn :: AlexPosn }
-      | SeqExp [(Exp,AlexPosn)]
+      | RecordExp { fields :: [(Symbol,Exp)], rtyp :: Symbol, rposn :: AlexPosn }
+      | SeqExp [Exp]
       | AssignExp { avar :: Var, aexp :: Exp, aPosn :: AlexPosn }
       | IfExp { iftest :: Exp, thenexp :: Exp, elseexp :: Maybe Exp, ifposn :: AlexPosn }
       | WhileExp { wtest :: Exp, wbody :: Exp, wPosn :: AlexPosn }
