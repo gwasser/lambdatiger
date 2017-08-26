@@ -41,7 +41,8 @@ test-suite tigerc-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   other-modules:       LexerTest,
-                       ParserTest
+                       ParserTest,
+                       AppelTest
   main-is:             MainSpec.hs
   build-depends:       base,
                        tasty,
