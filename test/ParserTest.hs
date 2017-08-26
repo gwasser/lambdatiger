@@ -26,23 +26,23 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 
 import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithPosn)
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
-import Tiger.Syntactic.Parser (happyTokenParse)
+import Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithPosn)
 import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
 
 
 -- these tests are NOT necessarily valid Tiger programs, but only syntactically
 -- correct constructs to exercise the parser
-parserTests = testGroup "Happy-based Tiger parser" [testParserNil, testParserIfThenElse]
+parserTests = testGroup "Happy-based Tiger parser" [testParserNil, testParserIfThenElse, testParserIfThenIfThenElse]
     
-    --testParserIfThenIfThenElse, testParserWhileDo, testParserProperForLoop, testParserSubscriptVar, testParserSeq, testParserArray, testParserLetVarDecl, testParserLetVarDecl2, testParserLetVarDecl3,testParserLetRecursiveFuncs, testParserTypeDecls, testParserLetFuncDecl]
+    -- testParserWhileDo, testParserProperForLoop, testParserSubscriptVar, testParserSeq, testParserArray, testParserLetVarDecl, testParserLetVarDecl2, testParserLetVarDecl3,testParserLetRecursiveFuncs, testParserTypeDecls, testParserLetFuncDecl]
 
 testParserNil =
   testCase "parses 'NIL'" $ assertEqual [] (Program NilExp) (happyTokenParse $ alexMonadScanTokens "nil")
 testParserIfThenElse =
-    testCase "parses 'if x then y else z'" $ assertEqual [] (Program (IfExp (VarExp (SimpleVar "x" (AlexPosn { row=1, col=4, absolute=4 }))) (VarExp (SimpleVar "y" (AlexPosn { row=1, col=11, absolute=11 }))) (Just (VarExp (SimpleVar "z" (AlexPosn { row=1, col=18, absolute=18 })))) (AlexPosn { row=1, col=1, absolute=1 })) ) (happyTokenParse $ alexMonadScanTokens "if x then y else z")
-{-
+    testCase "parses 'if x then y else z'" $ assertEqual [] (Program (IfExp (VarExp (SimpleVar "x" (AlexPosn { row=1, col=4, absolute=4 }))) (VarExp (SimpleVar "y" (AlexPosn { row=1, col=11, absolute=11 }))) (Just (VarExp (SimpleVar "z" (AlexPosn { row=1, col=18, absolute=18 })))) (AlexPosn { row=1, col=1, absolute=1 })) ) (happyTokenParseWithPosn $ alexMonadScanTokensWithPosn "if x then y else z")
 testParserIfThenIfThenElse =
-  testCase "parses 'if x then if a then b else c'" $ assertEqual [] (Program (IfExp (VarExp (SimpleVar "x")) (IfExp (VarExp (SimpleVar "a")) (VarExp (SimpleVar "b")) (Just (VarExp (SimpleVar "c")))) (Nothing) ) ) (happyTokenParse $ alexMonadScanTokens "if x then if a then b else c")
+  testCase "parses 'if x then if a then b else c'" $ assertEqual [] (Program (IfExp {iftest = VarExp (SimpleVar "x" (AlexPosn {absolute = 4, row = 1, col = 4})), thenexp = IfExp {iftest = VarExp (SimpleVar "a" (AlexPosn {absolute = 14, row = 1, col = 14})), thenexp = VarExp (SimpleVar "b" (AlexPosn {absolute = 21, row = 1, col = 21})), elseexp = Just (VarExp (SimpleVar "c" (AlexPosn {absolute = 28, row = 1, col = 28}))), ifposn = AlexPosn {absolute = 11, row = 1, col = 11}}, elseexp = Nothing, ifposn = AlexPosn {absolute = 1, row = 1, col = 1}}) ) (happyTokenParseWithPosn $ alexMonadScanTokensWithPosn "if x then if a then b else c")
+{-
 testParserWhileDo =
   testCase "parses 'while isTrue do 1234'" $ assertEqual [] (Program (WhileExp (VarExp (SimpleVar "isTrue")) (IntExp 1234))) (happyTokenParse $ alexMonadScanTokens "while isTrue do 1234")
 testParserProperForLoop =
