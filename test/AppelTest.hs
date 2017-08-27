@@ -33,7 +33,7 @@ import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), O
 -- and distributed via the textbook website
 appelTests = testGroup "Appel's original tests for Tiger" [testAppel1, testAppel2, testAppel3, testAppel4, testAppel5, testAppel6, testAppel7, testAppel8, testAppel9, testAppel10, testAppel11, testAppel12, testAppel13, testAppel14, testAppel15, testAppel16, testAppel17, testAppel18, testAppel19, testAppel20, testAppel21, testAppel22, testAppel23, testAppel24, testAppel25, testAppel26, testAppel27, testAppel28, testAppel29, testAppel30, testAppel31, testAppel32, testAppel33,testAppel34, testAppel35, testAppel36, testAppel37, testAppel38, testAppel39, testAppel40, testAppel41, testAppel42, testAppel43, testAppel44, testAppel45, testAppel46, testAppel47, testAppel48, testAppel49, testAppelMerge, testAppelQueens]
 
--- TODO: maybe use testCaseSteps in future when do typechecking?
+-- We use testCaseSteps to make it easy to add tests for each phase of compiler process.
 -- (https://hackage.haskell.org/package/tasty-hunit-0.9.2/docs/Test-Tasty-HUnit.html)
 
 testAppel1 =
