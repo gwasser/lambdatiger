@@ -234,9 +234,9 @@ testAppel49 =
     testCaseSteps "test49 (read from file)" $ \step -> do
         step "lexes test49"
         (readFile "test/appeltestcases/test49.tig" >>= (assertEqual [] ([LET, TYPE, ID "rectype", EQUAL, LBRACE, ID "name", COLON, ID "string", COMMA, ID "id", COLON, ID "int", RBRACE, VAR, ID "a", DEFINE, ID "rectype", NIL, IN, ID "a", END, TEOF])) . alexMonadScanTokens)
--- NOTE: turn this test back on once parser is updated to provide error handling
---testAppel49 =
-    --testCase "parses test49 (read from file)" $ (readFile "test/appeltestcases/test49.tig" >>= (assertEqual [] (Program $ NilExp)) . happyTokenParseWithPosn . alexMonadScanTokensWithPosn)
+        -- NOTE: turn this test back on once parser is updated to provide error handling
+        --step "handles parsing error for test49"
+        --(readFile "test/appeltestcases/test49.tig" >>= (assertEqual [] (Program $ NilExp)) . happyTokenParseWithPosn . alexMonadScanTokensWithPosn)
 testAppelMerge =
     testCaseSteps "merge.tig (read from file)" $ \step -> do
         step "parses merge.tig"

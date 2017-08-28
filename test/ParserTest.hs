@@ -32,10 +32,12 @@ import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), O
 
 -- these tests are NOT necessarily valid Tiger programs, but only syntactically
 -- correct constructs to exercise the parser
-parserTests = testGroup "Happy-based Tiger parser" [testParserNil, testParserIfThenElse, testParserIfThenIfThenElse, testParserWhileDo, testParserProperForLoop, testParserSubscriptVar, testParserSeq, testParserArray, testParserLetVarDecl, testParserLetVarDecl2, testParserLetVarDecl3,testParserLetRecursiveFuncs, testParserTypeDecls, testParserLetFuncDecl]
+parserTests = testGroup "Happy-based Tiger parser" [testParserNil, testParserIfNil, testParserIfThenElse, testParserIfThenIfThenElse, testParserWhileDo, testParserProperForLoop, testParserSubscriptVar, testParserSeq, testParserArray, testParserLetVarDecl, testParserLetVarDecl2, testParserLetVarDecl3,testParserLetRecursiveFuncs, testParserTypeDecls, testParserLetFuncDecl]
 
 testParserNil =
   testCase "parses 'NIL'" $ assertEqual [] (Program NilExp) (happyTokenParse $ alexMonadScanTokens "nil")
+testParserIfNil =
+  testCase "does not parse 'IF NIL'" $ assertEqual [] (Program NilExp) (happyTokenParseWithPosn $ alexMonadScanTokensWithPosn "if nil")
 testParserIfThenElse =
     testCase "parses 'if x then y else z'" $ assertEqual [] (Program (IfExp (VarExp (SimpleVar "x" (AlexPosn { row=1, col=4, absolute=4 }))) (VarExp (SimpleVar "y" (AlexPosn { row=1, col=11, absolute=11 }))) (Just (VarExp (SimpleVar "z" (AlexPosn { row=1, col=18, absolute=18 })))) (AlexPosn { row=1, col=1, absolute=1 })) ) (happyTokenParseWithPosn $ alexMonadScanTokensWithPosn "if x then y else z")
 testParserIfThenIfThenElse =

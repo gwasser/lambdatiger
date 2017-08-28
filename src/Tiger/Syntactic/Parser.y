@@ -181,7 +181,11 @@ happyTokenParse :: [Token] -> Program
 happyTokenParse ts = happyTokenParseWithPosn $ map (\t -> L {getPos=AlexPosn {absolute=1,row=1,col=1}, unPos=t}) ts
 
 parseError :: [L Token] -> a
-parseError _ = error "Parse error"
+parseError tokens = error ("Parse error: (Line " ++ show errRow ++ ", Col " ++ show errCol ++ "): " ++ show nextTok)
+    where errRow = row $ getPos next
+          errCol = col $ getPos next
+          nextTok = unPos next
+          next = head tokens
 
 -- Could include types representing syntax tree nodes,
 -- but we already imported that above from:
