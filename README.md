@@ -23,7 +23,7 @@ To compile, you ideally will have `ghc` and `stack`. Compile with
 
     stack build 
 
-Then you can test the interpreter with
+Then you can test the compiler library with
 
     stack test
     
@@ -36,7 +36,7 @@ You can either redirect a file from `stdin`, or provide filename(s) as parameter
 References
 ----------
 
-The Tiger language and overall desgin of the compiler is based on the Tiger language and compiler presented in the book:
+The Tiger language and overall design of the compiler is based on the Tiger language and compiler presented in the book:
 
 * Appel, Andrew W. _Modern Compiler Implementation in ML_. Cambridge University Press, 2004.
 
@@ -48,8 +48,8 @@ Aside from the main text, the following may be useful:
 * Dornan, Chris, et al. _Alex User Guide_. <https://www.haskell.org/alex/doc/html/index.html>.
 * Marlow, Simon, et al. _Happy User Guide_. <https://www.haskell.org/happy/doc/html/>.
 * Bhattacharya, Jyotirmoy. _Alex and Happy: Lexers and Parsers in Haskell_. Lean Publishing, 2015. <https://leanpub.com/alexandhappy>.
-* Ranta, Aarne. _Implementing Programming Languages: An Introduction to Compilers and Interpreters_.
 * Aho, Alfred, et al. _Compilers: Principles, Techniques, and Tools_ (also known as "The Dragon Book"). 2nd Edition. Pearson Education, 2007.
+* Ranta, Aarne. _Implementing Programming Languages: An Introduction to Compilers and Interpreters_. College Publications, 2012.
 * Pfenning, Frank, et al. _CMU 15-411 Lecture Notes_. <https://www.cs.cmu.edu/~fp/courses/15411-f13/>.
 * Diehl, Stephen. _Write You a Haskell_. <http://dev.stephendiehl.com/fun/>.
 
@@ -60,4 +60,4 @@ License
 
 This software and accompanying documentation are Copyright (C) 2016-2017 Garret Wassermann.
 
-This software is licensed under the GNU General Public License version 3. Please see the included LICENSE file with this distribution.
+This software distribution (including any documentation) is licensed under the GNU General Public License version 3. Please see the included COPYING file with this distribution.
