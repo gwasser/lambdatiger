@@ -18,7 +18,8 @@ library
   exposed-modules:     Tiger.Lexical.Lexer,
                        Tiger.Lexical.Tokens,
                        Tiger.Syntactic.AST,
-                       Tiger.Syntactic.Parser
+                       Tiger.Syntactic.Parser,
+                       Tiger.Semantic.RedBlackTree
   build-depends:       base,
                        utf8-string,
                        array,
@@ -42,6 +43,7 @@ test-suite tigerc-test
   hs-source-dirs:      test
   other-modules:       LexerTest,
                        ParserTest,
+                       SemantTest,
                        AppelTest
   main-is:             MainSpec.hs
   build-depends:       base,
