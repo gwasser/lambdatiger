@@ -22,13 +22,13 @@
 module Tiger.Semantic.RedBlackTree where
 
 -- |Represents two colors of Red-Black tree
-data Color = R | B deriving (Eq,Show)
+data Color = R | B deriving (Eq, Show)
 
 -- |A RedBlackTree (or set) consists of either empty nodes or subtree nodes,
 -- that themselves contain a left subtree, a value, and a right subtree.
 -- Note: Empty nodes are considered to be black.
 data RedBlackTree a = E | T Color (RedBlackTree a) a (RedBlackTree a)
-                     deriving (Eq,Show)
+                      deriving (Eq, Show)
 
 empty :: Ord a => RedBlackTree a
 empty = E

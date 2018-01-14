@@ -25,7 +25,7 @@ module Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithPosn) where
 import Control.Monad.Except
 
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..), getStr, getNum)
-import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Field(..), FunDecl(..), Symbol)
+import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Field(..), FunDec(..), Symbol)
 }
 
 
@@ -103,18 +103,18 @@ exp         : NIL                                                   { NilExp }
             | NUM                                                   { IntExp (getNum $ unPos $1) }
             | STR                                                   { StrExp (getStr $ unPos $1) (getPos $1) }
             | '(' expseq ')'                                        { if length($2) == 1 then head $2 else SeqExp (reverse $2) }
-            | '-' exp %prec NEG                                     { OpExp { left=(IntExp 0), oper=Sub, right=$2, opposn=(getPos $1) } }
+            | '-' exp %prec NEG                                     { OpExp { left=(IntExp 0), oper=MinusOp, right=$2, opposn=(getPos $1) } }
             | ID '(' arglist ')'                                    { CallExp { func=((getStr $ unPos $1) :: Symbol), args=(reverse $3), callposn=(getPos $2) } }
-            | exp '*' exp                                           { OpExp { left=$1, oper=Mul, right=$3, opposn=(getPos $2) } }
-            | exp '/' exp                                           { OpExp { left=$1, oper=Div, right=$3, opposn=(getPos $2) } }
-            | exp '+' exp                                           { OpExp { left=$1, oper=Add, right=$3, opposn=(getPos $2) } }
-            | exp '-' exp                                           { OpExp { left=$1, oper=Sub, right=$3, opposn=(getPos $2) } }
-            | exp '=' exp                                           { OpExp { left=$1, oper=Equal, right=$3, opposn=(getPos $2) } }
-            | exp '<>' exp                                          { OpExp { left=$1, oper=NotEqual, right=$3, opposn=(getPos $2) } }
-            | exp '>' exp                                           { OpExp { left=$1, oper=GreaterThan, right=$3, opposn=(getPos $2) } }
-            | exp '<' exp                                           { OpExp { left=$1, oper=LessThan, right=$3, opposn=(getPos $2) } }
-            | exp '>=' exp                                          { OpExp { left=$1, oper=GreaterEqual, right=$3, opposn=(getPos $2) } }
-            | exp '<=' exp                                          { OpExp { left=$1, oper=LessEqual, right=$3, opposn=(getPos $2) } }
+            | exp '*' exp                                           { OpExp { left=$1, oper=TimesOp, right=$3, opposn=(getPos $2) } }
+            | exp '/' exp                                           { OpExp { left=$1, oper=DivideOp, right=$3, opposn=(getPos $2) } }
+            | exp '+' exp                                           { OpExp { left=$1, oper=PlusOp, right=$3, opposn=(getPos $2) } }
+            | exp '-' exp                                           { OpExp { left=$1, oper=MinusOp, right=$3, opposn=(getPos $2) } }
+            | exp '=' exp                                           { OpExp { left=$1, oper=EqOp, right=$3, opposn=(getPos $2) } }
+            | exp '<>' exp                                          { OpExp { left=$1, oper=NeqOp, right=$3, opposn=(getPos $2) } }
+            | exp '>' exp                                           { OpExp { left=$1, oper=GtOp, right=$3, opposn=(getPos $2) } }
+            | exp '<' exp                                           { OpExp { left=$1, oper=LtOp, right=$3, opposn=(getPos $2) } }
+            | exp '>=' exp                                          { OpExp { left=$1, oper=GeOp, right=$3, opposn=(getPos $2) } }
+            | exp '<=' exp                                          { OpExp { left=$1, oper=LeOp, right=$3, opposn=(getPos $2) } }
             | exp '&' exp                                           { IfExp { iftest=$1, thenexp=$3, elseexp=(Just (IntExp 0)), ifposn=(getPos $2) } }
             | exp '|' exp                                           { IfExp { iftest=$1, thenexp=(IntExp 1), elseexp=(Just $3), ifposn=(getPos $2) } }
             | ID '{' recflist '}'                                   { RecordExp { fields=$3, rtyp=((getStr $ unPos $1) :: Symbol), rposn=(getPos $1) } }
@@ -143,14 +143,14 @@ lvalue      : ID                                                    { SimpleVar 
 decllist    : {- empty -}                                           { [] }
             | decllist decl                                         { $2 : $1 } 
          
-decl        : TYPE ID '=' ty                                        { TypeDecl { tname=((getStr $ unPos $2) :: Symbol), ttyp=$4, tposn=(getPos $1) } }
+decl        : TYPE ID '=' ty                                        { TypeDec { tname=((getStr $ unPos $2) :: Symbol), ttyp=$4, tposn=(getPos $1) } }
             | vardecl                                               { $1 }
-            | fundecllist                                           { FunDecls (reverse $1) }
+            | fundecllist                                           { FunctionDec (reverse $1) }
 
-ty          : ID                                                    { NameType ((getStr $ unPos $1) :: Symbol) (getPos $1) }
-            | '{' '}'                                               { RecordType [] }
-            | '{' fieldlist '}'                                     { RecordType $2 }
-            | ARRAY OF ID                                           { ArrayType ((getStr $ unPos $3) :: Symbol) (getPos $1) }
+ty          : ID                                                    { NameTy ((getStr $ unPos $1) :: Symbol) (getPos $1) }
+            | '{' '}'                                               { RecordTy [] }
+            | '{' fieldlist '}'                                     { RecordTy $2 }
+            | ARRAY OF ID                                           { ArrayTy ((getStr $ unPos $3) :: Symbol) (getPos $1) }
             
 recflist    : recfield                                              { [$1] }
             | recflist ',' recfield                                 { $3 : $1 }
@@ -163,16 +163,16 @@ fieldlist   : field                                                 { [$1] }
             
 field       : ID ':' ID                                             { Field { fieldname=((getStr $ unPos $1) :: Symbol), escape=True, typ=((getStr $ unPos $3) :: Symbol), fieldposn=(getPos $1) } }
          
-vardecl     : VAR ID ':=' exp                                       { VarDecl { vname=((getStr $ unPos $2) :: Symbol), vescape=True, vtyp=Nothing, vinit=$4, vposn=(getPos $1) } }
-            | VAR ID ':' ID ':=' exp                                { VarDecl { vname=((getStr $ unPos $2) :: Symbol), vescape=True, vtyp=(Just ((getStr $ unPos $4) :: Symbol)), vinit=$6, vposn=(getPos $1) } }
+vardecl     : VAR ID ':=' exp                                       { VarDec { vname=((getStr $ unPos $2) :: Symbol), vescape=True, vtyp=Nothing, vinit=$4, vposn=(getPos $1) } }
+            | VAR ID ':' ID ':=' exp                                { VarDec { vname=((getStr $ unPos $2) :: Symbol), vescape=True, vtyp=(Just ((getStr $ unPos $4) :: Symbol)), vinit=$6, vposn=(getPos $1) } }
             
 fundecllist : {- empty -}                                           { [] }
             | fundecllist fundecl                                   { $2 : $1 } 
         
-fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDecl { fundeclname=((getStr $ unPos $2) :: Symbol), params=[], result=(Nothing, getPos $5), body=$6, funposn=(getPos $1) } }
-            | FUNCTION ID '(' fieldlist ')' '=' exp                 { FunDecl { fundeclname=((getStr $ unPos $2) :: Symbol), params=$4, result=(Nothing, getPos $6), body=$7, funposn=(getPos $1) } }
-            | FUNCTION ID '(' ')' ':' ID '=' exp                    { FunDecl { fundeclname=((getStr $ unPos $2) :: Symbol), params=[], result=((Just ((getStr $ unPos $6) :: Symbol)), getPos $5), body=$8, funposn=(getPos $1) } }
-            | FUNCTION ID '(' fieldlist ')' ':' ID '=' exp          { FunDecl { fundeclname=((getStr $ unPos $2) :: Symbol), params=$4, result=((Just ((getStr $ unPos $7) :: Symbol)), getPos $6), body=$9, funposn=(getPos $1) } }
+fundecl     : FUNCTION ID '(' ')' '=' exp                           { FunDec { fundeclname=((getStr $ unPos $2) :: Symbol), params=[], result=(Nothing, getPos $5), body=$6, funposn=(getPos $1) } }
+            | FUNCTION ID '(' fieldlist ')' '=' exp                 { FunDec { fundeclname=((getStr $ unPos $2) :: Symbol), params=$4, result=(Nothing, getPos $6), body=$7, funposn=(getPos $1) } }
+            | FUNCTION ID '(' ')' ':' ID '=' exp                    { FunDec { fundeclname=((getStr $ unPos $2) :: Symbol), params=[], result=((Just ((getStr $ unPos $6) :: Symbol)), getPos $5), body=$8, funposn=(getPos $1) } }
+            | FUNCTION ID '(' fieldlist ')' ':' ID '=' exp          { FunDec { fundeclname=((getStr $ unPos $2) :: Symbol), params=$4, result=((Just ((getStr $ unPos $7) :: Symbol)), getPos $6), body=$9, funposn=(getPos $1) } }
      
 {
 

@@ -27,7 +27,7 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithPosn)
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
 import Tiger.Syntactic.Parser (happyTokenParse)
-import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
+import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDec(..))
 
 -- these tests are NOT necessarily valid Tiger programs, but only lists
 -- of tokens to check that the lexer does what I expect

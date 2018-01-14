@@ -27,7 +27,7 @@ import Test.Tasty.HUnit (assertEqual, testCase, testCaseSteps)
 import Tiger.Lexical.Lexer (alexMonadScanTokens, alexMonadScanTokensWithPosn)
 import Tiger.Lexical.Tokens (Token(..), L(..), AlexPosn(..))
 import Tiger.Syntactic.Parser (happyTokenParse, happyTokenParseWithPosn)
-import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDecl(..))
+import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), Op(..), Symbol, Field(..), FunDec(..))
 import Tiger.Semantic.RedBlackTree (RedBlackTree(..), Color(..), empty, member, insert)
 
 

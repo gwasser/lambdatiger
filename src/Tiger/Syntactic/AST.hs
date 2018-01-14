@@ -54,32 +54,32 @@ data Var
     deriving (Show, Eq)
     
 data Decl
-    = FunDecls [FunDecl]
-    | VarDecl { vname :: Symbol, vescape :: Bool, vtyp :: Maybe Symbol, vinit :: Exp, vposn :: AlexPosn }
-    | TypeDecl { tname :: Symbol, ttyp :: Type, tposn :: AlexPosn }
+    = FunctionDec [FunDec]
+    | VarDec { vname :: Symbol, vescape :: Bool, vtyp :: Maybe Symbol, vinit :: Exp, vposn :: AlexPosn }
+    | TypeDec { tname :: Symbol, ttyp :: Type, tposn :: AlexPosn }
     deriving (Show, Eq)
     
 data Type
-    = NameType Symbol AlexPosn
-    | RecordType [Field]
-    | ArrayType Symbol AlexPosn
+    = NameTy Symbol AlexPosn
+    | RecordTy [Field]
+    | ArrayTy Symbol AlexPosn
     deriving (Show, Eq)
     
 data Op
-    = Add
-    | Sub
-    | Mul
-    | Div
-    | Equal
-    | NotEqual
-    | GreaterThan
-    | LessThan
-    | GreaterEqual
-    | LessEqual
+    = PlusOp
+    | MinusOp
+    | TimesOp
+    | DivideOp
+    | EqOp
+    | NeqOp -- not equal
+    | GtOp -- greater than
+    | LtOp -- less than
+    | GeOp -- greater than or equal
+    | LeOp -- less than or equal
     deriving (Show, Eq)
     
 type Symbol = String
 
 data Field = Field { fieldname :: Symbol, escape :: Bool, typ :: Symbol, fieldposn :: AlexPosn } deriving (Show, Eq)
       
-data FunDecl = FunDecl { fundeclname :: Symbol, params :: [Field], result :: (Maybe Symbol, AlexPosn), body :: Exp, funposn :: AlexPosn } deriving (Show, Eq)
+data FunDec = FunDec { fundeclname :: Symbol, params :: [Field], result :: (Maybe Symbol, AlexPosn), body :: Exp, funposn :: AlexPosn } deriving (Show, Eq)
