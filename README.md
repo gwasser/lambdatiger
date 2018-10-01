@@ -17,9 +17,9 @@ Also, consider this a work-in-progress, as many of the features described above 
 Building
 --------
 
-This compiler is itself written in Haskell.
+This compiler is itself written in Haskell. Aside from standard `ghc` compiler libraries, you will need `tasty` testing framework installed. To compile, you ideally will use `stack` since it can manage dependencies and the build.
 
-To compile, you ideally will have `ghc` and `stack`. Compile with
+Compile with
 
     stack build 
 
@@ -58,6 +58,6 @@ A larger list that I haven't read much yet is [Awesome Compilers](https://github
 License
 -------
 
-This software and accompanying documentation are Copyright (C) 2016-2017 Garret Wassermann.
+This software and accompanying documentation are Copyright (C) 2016-2018 Garret Wassermann.
 
 This software distribution (including any documentation) is licensed under the GNU General Public License version 3. Please see the included COPYING file with this distribution.
