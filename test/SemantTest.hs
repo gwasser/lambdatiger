@@ -35,7 +35,7 @@ import Tiger.Semantic.RedBlackTree (RedBlackTree(..), Color(..), empty, member, 
 redblackTests = testGroup "Red-Black Trees" [testRB]
 
 testRB =
-  testCaseSteps "empty tree" $ \step -> do
+  testCaseSteps "simple tree ops with insert and member" $ \step -> do
       step "empty tree"
       let rbEmpty = empty :: RedBlackTree Int
       assertEqual [] (E) (rbEmpty)

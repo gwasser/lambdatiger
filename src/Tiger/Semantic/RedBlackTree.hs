@@ -42,16 +42,16 @@ member x (T _ a y b) = if x<y
                             else True
 
 insert :: Ord a => a -> RedBlackTree a -> RedBlackTree a
-insert x s = T B a y b
-    where T _ a y b = ins s
-          ins E = T R E x E
+insert x s = makeBlack $ ins s
+    where ins E = T R E x E
           ins s@(T color a y b) = if x<y
                                   then balance color (ins a) y b
                                   else if x>y
                                        then balance color a y (ins b)
                                        else s
+          makeBlack (T _ a y b) = T B a y b
 
--- |Balance a red-black tree to ensure invariants remain true
+-- |Balance a red-black tree after insert to ensure invariants remain true
 balance :: Ord a => Color -> RedBlackTree a -> a -> RedBlackTree a -> RedBlackTree a
 balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
 balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
