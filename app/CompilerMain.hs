@@ -29,15 +29,18 @@ module Main where
 import System.Environment
 import System.Exit
 
+import Data.Version ( showVersion )
+import Paths_lambdatiger ( version )
+
 main :: IO ()
 main = getArgs >>= parseArgs
 
 parseArgs ["-h"] = usage   >> exit
-parseArgs ["-v"] = version >> exit
+parseArgs ["-v"] = info    >> exit
 --parseArgs []     = print $ getContents
 --parseArgs fs     = print $ concat `fmap` mapM readFile fs
 
 usage   = putStrLn "Usage: tigerc [-vh] [file ..]"
-version = putStrLn "tigerc - compiler for Tiger language" >> putStrLn "version 0.1.0.0"
+info    = putStrLn ("tigerc compiler, version " ++ (showVersion version))
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)

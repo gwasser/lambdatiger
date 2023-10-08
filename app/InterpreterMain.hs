@@ -32,6 +32,9 @@ import System.Environment
 import System.Exit
 import System.IO
 
+import Data.Version ( showVersion )
+import Paths_lambdatiger ( version )
+
 import Control.Monad.Trans
 import System.Console.Haskeline
     
@@ -68,7 +71,7 @@ parseArgs []             = version >> ctrld >> repl False
 parseArgs _              = error "Error parsing command line arguments"
 
 usage   = putStrLn "Usage: tigeri [-vh]"
-version = putStrLn "Tiger interpreter 0.0.1"
+version = putStrLn ("Tiger interpreter, version " ++ (showVersion version))
 ctrld   = putStrLn "Type CTRL+D to exit"
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)
