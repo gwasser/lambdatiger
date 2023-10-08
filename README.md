@@ -1,7 +1,7 @@
-tigerc
-======
+lambdatiger
+===========
 
-Tiger Compiler library, with compiler and interpreter frontends
+Tiger programming language implementation, with compiler and interpreter frontends
 
 What?
 -----
