@@ -1,4 +1,4 @@
-name:                tigerc
+name:                lambdatiger
 version:             0.2.0.0
 synopsis:            An experimental compiler for Tiger language
 description:         Please see README.md
@@ -7,7 +7,7 @@ license:             GPL-3
 license-file:        COPYING
 author:              Garret Wassermann
 maintainer:          geewass@member.fsf.org
-copyright:           2016-2018 Garret Wassermann
+copyright:           2016-2023 Garret Wassermann
 category:            Development
 build-type:          Simple
 extra-source-files:  README.md
@@ -32,9 +32,10 @@ library
 
 executable tigerc
   hs-source-dirs:      app
+  other-modules:       Paths_lambdatiger
   main-is:             CompilerMain.hs
   build-depends:       base,
-                       tigerc
+                       lambdatiger
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
@@ -49,10 +50,10 @@ test-suite tigerc-test
   build-depends:       base,
                        tasty,
                        tasty-hunit,
-                       tigerc
+                       lambdatiger
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://gitlab.com/gwasser/tigerc
+  location: https://gitlab.com/gwasser/lambdatiger
