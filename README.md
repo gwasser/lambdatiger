@@ -32,6 +32,35 @@ You can run the command you prefer (`tigerc` the compiler, or `tigeri` the inter
     stack exec (COMMAND_NAME)
     
 You can either redirect a file from `stdin`, or provide filename(s) as parameters for interpretation. You can pass parameters to the actual executable and not `stack` by putting them after a `--`, such as `stack exec tigerc -- --help`.
+
+Tutorial
+--------
+
+I am maintaining a tutorial set of notes about the implementation as an [mdBook](https://rust-lang.github.io/mdBook/index.html) for easy online viewing. The source for the tutorial is included in this repository.
+
+The tutorial can be viewed online at [gwasser.github.io/lambdatiger](http://gwasser.github.io/lambdatiger). It is automatically built using the GitHub Actions pipelines.
+
+To build the book manually, you will need a Rust toolchain installed with the `mdbook` command install. If you don't have the `mdbook` command available, install it with:
+```
+cargo install mdbook
+```
+I also use the [`mdbook-pdf`](https://crates.io/crates/mdbook-pdf) extension to build to a PDF for printing and publishing, install it with:
+```
+cargo install mdbook-pdf
+```
+
+Once you have the prerequisite commands installed, run:
+
+```
+mdbook build
+```
+
+You can also serve and view in web browser for easier viewing and automatic updates:
+
+```
+mdbook serve
+```
+By default, the files are served at `localhost:3000`.
     
 References
 ----------

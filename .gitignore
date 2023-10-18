@@ -2,3 +2,4 @@
 .directory
 *.hi
 *.o
+book/
