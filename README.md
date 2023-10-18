@@ -58,6 +58,6 @@ A larger list that I haven't read much yet is [Awesome Compilers](https://github
 License
 -------
 
-This software and accompanying documentation are Copyright (C) 2016-2018 Garret Wassermann.
+This software and accompanying documentation are Copyright (C) 2016-2023 Garret Wassermann.
 
 This software distribution (including any documentation) is licensed under the GNU General Public License version 3. Please see the included COPYING file with this distribution.

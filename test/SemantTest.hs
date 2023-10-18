@@ -31,7 +31,7 @@ import Tiger.Syntactic.AST (Program(..), Exp(..), Var(..), Decl(..), Type(..), O
 import Tiger.Semantic.RedBlackTree (RedBlackTree(..), Color(..), empty, member, insert)
 
 
--- Tiger programs that we can check the sematics of
+-- Tiger programs that we can check the semantics of
 redblackTests = testGroup "Red-Black Trees" [testRB]
 
 testRB =
