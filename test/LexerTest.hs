@@ -70,9 +70,9 @@ testLexerNoCommentInStrings =
 testStringLiterals =
     testCase "accepts input 'if \"string\" = \"other\" then x'" $ assertEqual [] ([IF, STR "string", EQUAL, STR "other", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"string\" = \"other\" then x")
 testStringLiteralsWithEscapes =
-    testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x'" $ assertEqual [] ([IF, STR "abc\n", EQUAL, STR "lmn\t", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"abc\n\" = \"lmn\t\" then x")
+    testCase "accepts input if-then with new line" $ assertEqual [] ([IF, STR "abc\n", EQUAL, STR "lmn\t", THEN, ID "x", TEOF]) (alexMonadScanTokens "if \"abc\n\" = \"lmn\t\" then x")
 testStringLiteralsWithEscapesWithMeta =
-    testCase "accepts input 'if \"abc\n\" = \"lmn\t\" then x' with meta" $ assertEqual [] ([L {getPos=AlexPosn {absolute=1, row=1, col=1}, unPos=IF}, L {getPos=AlexPosn {absolute=9, row=1, col=9}, unPos=STR "abc\n"}, L {getPos=AlexPosn {absolute=11, row=2, col=2}, unPos=EQUAL}, L {getPos=AlexPosn {absolute=18, row=2, col=9}, unPos=STR "lmn\t"}, L {getPos=AlexPosn {absolute=20, row=2, col=11}, unPos=THEN}, L {getPos=AlexPosn {absolute=25, row=2, col=16}, unPos=ID "x"}, L {getPos=AlexPosn {absolute=26, row=2, col=17}, unPos=TEOF}]) (alexMonadScanTokensWithPosn "if \"abc\n\" = \"lmn\t\" then x")
+    testCase "accepts input if-then with new line and meta" $ assertEqual [] ([L {getPos=AlexPosn {absolute=1, row=1, col=1}, unPos=IF}, L {getPos=AlexPosn {absolute=9, row=1, col=9}, unPos=STR "abc\n"}, L {getPos=AlexPosn {absolute=11, row=2, col=2}, unPos=EQUAL}, L {getPos=AlexPosn {absolute=18, row=2, col=9}, unPos=STR "lmn\t"}, L {getPos=AlexPosn {absolute=20, row=2, col=11}, unPos=THEN}, L {getPos=AlexPosn {absolute=25, row=2, col=16}, unPos=ID "x"}, L {getPos=AlexPosn {absolute=26, row=2, col=17}, unPos=TEOF}]) (alexMonadScanTokensWithPosn "if \"abc\n\" = \"lmn\t\" then x")
 testMultilineString =
     testCase "accepts multiline string as input" $ assertEqual [] ([IF, ID "x", THEN, ID "y", ELSE, ID "z", TEOF]) (alexMonadScanTokens "if x \
                                     \then y \
