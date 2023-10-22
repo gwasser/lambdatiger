@@ -69,8 +69,9 @@ The Tiger language and overall design of the compiler is based on the Tiger lang
 
 * Appel, Andrew W. _Modern Compiler Implementation in ML_. Cambridge University Press, 2004.
 
-However, the book implements sample code in ML, and does not provide sample code for all details of the compiler.
-The `tigerc` project is an attempt at a Haskell implementation of a similar Tiger language compiler. I in particular intend on extending the Tiger language with functional features, as suggested later in the book.
+However, the book describes implementation in ML, and does not provide sample code for all details of the compiler (the [book website](https://www.cs.princeton.edu/~appel/modern/ml/) does provide some ML templates for guidance but not the full source of course as that is left as an exercise for the reader).
+
+This project is an attempt at a Haskell implementation rather than ML of a similar Tiger language compiler.
 
 Aside from the main text, the following may be useful:
 
