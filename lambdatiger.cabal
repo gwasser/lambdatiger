@@ -2,7 +2,7 @@ name:                lambdatiger
 version:             0.2.0.0
 synopsis:            An experimental compiler for Tiger language
 description:         Please see README.md
-homepage:            https://gitlab.com/gwasser/tigerc#readme
+homepage:            https://github.com/gwasser/lambdatiger#readme
 license:             GPL-3
 license-file:        COPYING
 author:              Garret Wassermann
