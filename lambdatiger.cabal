@@ -56,4 +56,4 @@ test-suite tigerc-test
 
 source-repository head
   type:     git
-  location: https://gitlab.com/gwasser/lambdatiger
+  location: https://github.com/gwasser/lambdatiger
