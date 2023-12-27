@@ -17,8 +17,8 @@
 #  location: "./custom-snapshot.yaml"
 
 
-resolver: lts-21.25 # LTS 21 for GHC 9.4.8
-compiler: ghc-9.4.8
+resolver: lts-22.3 # LTS 21 for GHC 9.6.3
+compiler: ghc-9.6.3
 compiler-check: match-exact
 # Control whether we use the GHC we find on the path
 # we default to system because you should have used ghcup
