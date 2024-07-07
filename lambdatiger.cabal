@@ -7,7 +7,7 @@ license:             GPL-3
 license-file:        COPYING
 author:              Garret Wassermann
 maintainer:          geewass@member.fsf.org
-copyright:           2016-2023 Garret Wassermann
+copyright:           2016-2024 Garret Wassermann
 category:            Development
 build-type:          Simple
 extra-source-files:  README.md
