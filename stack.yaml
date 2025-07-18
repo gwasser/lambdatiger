@@ -17,8 +17,8 @@
 #  location: "./custom-snapshot.yaml"
 
 
-resolver: nightly-2025-04-11 # Nightly for GHC 9.10
-compiler: ghc-9.10.1
+resolver: lts-24.0 # LTS 24 for GHC 9.10.2
+compiler: ghc-9.10.2
 compiler-check: match-exact
 # Control whether we use the GHC we find on the path
 # we default to system because you should have used ghcup
